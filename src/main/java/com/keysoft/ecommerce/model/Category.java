@@ -23,4 +23,10 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     private Set<Product> products = new HashSet<>();
+
+    @Column(name = "parents_id")
+    private Long parentsId;
+
+    @Column(name = "enable")
+    private Boolean enable = true;
 }

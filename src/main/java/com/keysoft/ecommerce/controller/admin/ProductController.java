@@ -19,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/product")
 @Slf4j
+@CrossOrigin
 public class ProductController {
     @Autowired
     private ProductService productService;
