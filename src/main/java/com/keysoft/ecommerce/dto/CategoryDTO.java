@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CategoryDTO {
+public class CategoryDTO extends BaseDTO{
     private Long id;
     private String name;
     private String code;

@@ -3,6 +3,7 @@ package com.keysoft.ecommerce.controller.admin;
 import com.keysoft.ecommerce.constant.DefaultPageEnum;
 import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.model.Category;
+import com.keysoft.ecommerce.service.CategoryService;
 import com.keysoft.ecommerce.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/product")
@@ -19,6 +22,8 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
 
     @PostMapping("/list")
     public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -28,46 +33,42 @@ public class ProductController {
         productDTO.setSize(size);
 
         Page<ProductDTO> result = productService.getAllProducts(productDTO);
-        if(result.isEmpty()) {
-            return new ResponseEntity<>("Chưa có sản phẩm nào!", HttpStatus.NOT_FOUND);
-        }else{
-            return new ResponseEntity<>(result, HttpStatus.OK);
+        if (result.isEmpty()) {
+            return ResponseEntity.ok("Chưa có sản phẩm nào!");
+        } else {
+            return ResponseEntity.ok(result);
         }
     }
 
-    // Thêm mới sản phẩm
-    @PostMapping("/add")
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTO product) {
+    @GetMapping("/add")
+    public ResponseEntity<?> addProduct() {
+        log.info("controller: add product form");
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("product", new ProductDTO());
+        responseData.put("rootCategories", categoryService.getRootCategories());
+        return ResponseEntity.ok(responseData);
+    }
+
+    @GetMapping("/update/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable("id") String id) {
+        log.info("controller: update product form, id = {}", id);
+        Map<String, Object> responseData = new HashMap<>();
         try {
-            productService.save(product);
-            return new ResponseEntity<>("Product added successfully", HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            responseData.put("product", productService.get(Long.valueOf(id)));
+            responseData.put("rootCategories", categoryService.getRootCategories());
+            return ResponseEntity.ok(responseData);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Cập nhật sản phẩm
-    @PutMapping("/ucommitpdate/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO product) {
-        try {
-            product.setId(id);
-            productService.save(product);
-            return new ResponseEntity<>("Product updated successfully", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody ProductDTO product) {
+        boolean isSaved = productService.save(product);
+        if(isSaved){
+            return ResponseEntity.ok("Save successfully");
         }
-    }
-
-    // Lấy thông tin sản phẩm để chỉnh sửa
-    @GetMapping("/edit/{id}")
-    public ResponseEntity<?> getProductForEdit(@PathVariable("id") Long id) {
-        try {
-            ProductDTO product = productService.findByID(id);
-            List<Category> rootCategories = categoryService.getRootCategories();
-            return ResponseEntity.ok(new ProductEditResponse(product, rootCategories));
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.badRequest().body("Save error");
     }
 
 }

@@ -15,7 +15,10 @@ public class ProductDTO extends BaseDTO{
     private String code;
     private BigDecimal price;
     private BigDecimal importPrice;
-    private List<String> images;
+    private String description;
+    private Integer quantity;
+    private List<ProductImageDTO> images;
     private Set<CategoryDTO> categories;
+    private List<Long> productCategories;
     private Boolean enable;
 }

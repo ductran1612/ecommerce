@@ -6,4 +6,6 @@ import org.springframework.data.domain.Page;
 public interface ProductService {
     Page<ProductDTO> getAllProducts(ProductDTO productDTO);
     boolean save(ProductDTO productDTO);
+
+    ProductDTO get(Long id);
 }
