@@ -5,6 +5,7 @@ import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.model.Category;
 import com.keysoft.ecommerce.repository.CategoryRepository;
 import com.keysoft.ecommerce.service.CategoryService;
+import com.keysoft.ecommerce.specification.CategorySpecification;
 import com.keysoft.ecommerce.util.CodeHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,8 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private CategorySpecification categorySpecification;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -74,5 +77,29 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO get(Long id) {
         return modelMapper.map(categoryRepository.findById(id).orElse(null), CategoryDTO.class);
+    }
+
+    @Override
+    public List<CategoryDTO> searchByKeyword(String keyword, boolean b) {
+        log.info("service: search parents by keyword: {}", keyword);
+        List<Category> list = categoryRepository.findAll(categorySpecification.search(keyword, b));
+        List<CategoryDTO> results = new ArrayList<>();
+        for (Category item : list) {
+
+        }
+        return null;
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        log.info("service: delete category id: {}", id);
+
+        Category category = categoryRepository.findById(id).orElse(null);
+        if(category == null){
+            return false;
+        }
+        category.setEnable(false);
+        categoryRepository.save(category);
+        return !categoryRepository.findById(id).orElse(new Category()).getEnable();
     }
 }

@@ -8,4 +8,6 @@ public interface ProductService {
     boolean save(ProductDTO productDTO);
 
     ProductDTO get(Long id);
+
+    boolean delete(Long id);
 }

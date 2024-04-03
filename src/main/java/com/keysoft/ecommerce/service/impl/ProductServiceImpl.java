@@ -140,6 +140,20 @@ public class ProductServiceImpl implements ProductService {
         return modelMapper.map(productRepository.findById(id).orElse(null), ProductDTO.class);
     }
 
+    @Override
+    public boolean delete(Long id) {
+        log.info("service: delete product id: {}", id);
+
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            return false;
+        }
+        product.setEnable(false);
+        productRepository.save(product);
+        return !productRepository.findById(id).orElse(new Product()).getEnable();
+
+    }
+
     public boolean checkNameUsed(ProductDTO criteria) {
         log.info("SERVICE PROCESS: CHECK PRODUCT NAME USED, CRITERIA: {}", criteria);
 

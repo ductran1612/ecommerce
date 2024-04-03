@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,14 +33,14 @@ public class CategoryController {
             return ResponseEntity.ok(result);
         }
     }
-
-    @GetMapping("/add")
-    public ResponseEntity<?> addCategory() {
-        log.info("controller: add category form");
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("category", new CategoryDTO());
-        return ResponseEntity.ok(responseData);
-    }
+//
+//    @GetMapping("/add")
+//    public ResponseEntity<?> addCategory() {
+//        log.info("controller: add category form");
+//        Map<String, Object> responseData = new HashMap<>();
+//        responseData.put("category", new CategoryDTO());
+//        return ResponseEntity.ok(responseData);
+//    }
 
     @GetMapping("/update/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable("id") String id) {
@@ -56,6 +57,16 @@ public class CategoryController {
         }
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") String id) {
+        log.info("controller: delete category, id = {}", id);
+        try{
+            return ResponseEntity.ok(categoryService.delete(Long.valueOf(id)));
+        }catch (NumberFormatException e){
+            return ResponseEntity.badRequest().body("Xoá không thành công!");
+        }
+    }
+
     @PostMapping(value = "/save")
     public ResponseEntity<?> save(@RequestBody CategoryDTO categoryDTO) {
         log.info("controller: save category");
@@ -64,6 +75,13 @@ public class CategoryController {
             return ResponseEntity.ok("Save successfully");
         }
         return ResponseEntity.badRequest().body("Save error");
+    }
+
+    @GetMapping("/listParents")
+    public ResponseEntity<List<CategoryDTO>> getParentsCategories (@RequestParam (value = "keyword", required = false) String keyword) {
+        log.info("controller: search parents categories, keyword: {}", keyword);
+        List<CategoryDTO> results = categoryService.searchByKeyword (keyword, true);
+        return ResponseEntity.ok(results.isEmpty() ? null : results);
     }
 
 }

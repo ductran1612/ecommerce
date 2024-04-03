@@ -72,4 +72,14 @@ public class ProductController {
         return ResponseEntity.badRequest().body("Save error");
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable("id") String id){
+        log.info("controller: delete product id: {}", id);
+        try{
+            return ResponseEntity.ok(productService.delete(Long.valueOf(id)));
+        }catch (NumberFormatException e){
+            return ResponseEntity.badRequest().body("Xoá không thành công!");
+        }
+    }
+
 }

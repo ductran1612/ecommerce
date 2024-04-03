@@ -11,4 +11,8 @@ public interface CategoryService {
     boolean save(CategoryDTO categoryDTO);
 
     CategoryDTO get(Long id);
+
+    List<CategoryDTO> searchByKeyword(String keyword, boolean b);
+
+    boolean delete(Long id);
 }
