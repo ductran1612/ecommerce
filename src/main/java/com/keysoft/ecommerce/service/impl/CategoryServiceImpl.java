@@ -49,6 +49,9 @@ public class CategoryServiceImpl implements CategoryService {
 
         for(Category item : page.getContent()) {
             CategoryDTO dto = modelMapper.map(item, CategoryDTO.class);
+            if(dto.getParentsId() != null) {
+                dto.setParentsCategory(modelMapper.map(categoryRepository.findById(dto.getParentsId()), CategoryDTO.class));
+            }
             results.add(dto);
         }
         return new PageImpl<>(results, PageRequest.of(categoryDTO.getPage(), categoryDTO.getSize()), page.getTotalElements());
