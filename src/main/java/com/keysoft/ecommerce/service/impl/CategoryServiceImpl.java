@@ -83,14 +83,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> searchByKeyword(String keyword, boolean b) {
-        log.info("service: search parents by keyword: {}", keyword);
-        List<Category> list = categoryRepository.findAll(categorySpecification.search(keyword, b));
+    public List<CategoryDTO> getParentsCategories() {
+        log.info("service: get parents categories");
+        List<Category> list = categoryRepository.findByParentsIdIsNull();
         List<CategoryDTO> results = new ArrayList<>();
         for (Category item : list) {
-
+            results.add(modelMapper.map(item, CategoryDTO.class));
         }
-        return null;
+        return results;
     }
 
     @Override

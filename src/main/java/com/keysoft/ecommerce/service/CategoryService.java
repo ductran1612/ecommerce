@@ -12,7 +12,7 @@ public interface CategoryService {
 
     CategoryDTO get(Long id);
 
-    List<CategoryDTO> searchByKeyword(String keyword, boolean b);
+    List<CategoryDTO> getParentsCategories();
 
     boolean delete(Long id);
 }

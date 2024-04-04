@@ -78,9 +78,9 @@ public class CategoryController {
     }
 
     @GetMapping("/listParents")
-    public ResponseEntity<List<CategoryDTO>> getParentsCategories (@RequestParam (value = "keyword", required = false) String keyword) {
-        log.info("controller: search parents categories, keyword: {}", keyword);
-        List<CategoryDTO> results = categoryService.searchByKeyword (keyword, true);
+    public ResponseEntity<List<CategoryDTO>> getParentsCategories () {
+        log.info("controller: get parents categories");
+        List<CategoryDTO> results = categoryService.getParentsCategories();
         return ResponseEntity.ok(results.isEmpty() ? null : results);
     }
 
