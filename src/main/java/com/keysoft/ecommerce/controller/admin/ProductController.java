@@ -35,7 +35,7 @@ public class ProductController {
 
         Page<ProductDTO> result = productService.getAllProducts(productDTO);
         if (result.isEmpty()) {
-            return ResponseEntity.ok("Chưa có sản phẩm nào!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm nào!");
         } else {
             return ResponseEntity.ok(result);
         }
