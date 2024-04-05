@@ -102,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
                     productImages.add(image);
                     FileOutputStream fos;
                     try {
-                        Path imagePath = Paths.get("/Users/macbook/images", fileName);
+                        Path imagePath = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", fileName);
                         // Tạo một FileOutputStream để ghi dữ liệu vào tệp
                         fos = new FileOutputStream(imagePath.toFile());
                         fos.write(imageBytes);
