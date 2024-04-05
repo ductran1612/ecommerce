@@ -79,7 +79,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO get(Long id) {
-        return modelMapper.map(categoryRepository.findById(id).orElse(null), CategoryDTO.class);
+        CategoryDTO dto = modelMapper.map(categoryRepository.findById(id).orElse(null), CategoryDTO.class);
+        if (dto == null)
+            throw new IllegalArgumentException("Không tìm thấy danh mục sản phẩm");
+
+        return dto;
     }
 
     @Override
