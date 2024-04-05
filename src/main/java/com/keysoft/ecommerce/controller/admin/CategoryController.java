@@ -48,7 +48,11 @@ public class CategoryController {
         Map<String, Object> responseData = new HashMap<>();
         try {
             CategoryDTO categoryDTO = categoryService.get(Long.valueOf(id));
-            CategoryDTO parents = categoryService.get(categoryDTO.getParentsId());
+            CategoryDTO parents = null;
+            if(categoryDTO.getParentsId() != null) {
+                parents = categoryService.get(categoryDTO.getParentsId());
+            }
+
             categoryDTO.setParentsCategory(parents);
             responseData.put("category", categoryService.get(Long.valueOf(id)));
             return ResponseEntity.ok(responseData);
