@@ -120,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
                 for(ProductImage img : product.getImages()){
                     if(!imageIds.contains(img.getId())){
                         productImageRepository.deleteById(img.getId());
-                        Path imagePathToDelete = Paths.get("/Users/macbook/images", img.getName());
+                        Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
                         try {
                             Files.deleteIfExists(imagePathToDelete);
                         } catch (IOException e) {
