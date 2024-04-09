@@ -6,6 +6,7 @@ import com.keysoft.ecommerce.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/list")
+    @PostMapping ("/list")
     public ResponseEntity<?> getAllCategories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
         log.info("controller: get all categories");
         CategoryDTO categoryDTO = new CategoryDTO();
@@ -28,7 +29,7 @@ public class CategoryController {
         categoryDTO.setSize(size);
         Page<CategoryDTO> result = categoryService.getAllCategories(categoryDTO);
         if(result.isEmpty()){
-            return ResponseEntity.ok("Chưa có danh mục nào!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh quyền nào!");
         } else {
             return ResponseEntity.ok(result);
         }
