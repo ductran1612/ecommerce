@@ -39,7 +39,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean save(GroupDTO groupDTO) {
         log.info("SERVICE : SAVE GROUP, GROUP: {}", groupDTO);
-        boolean isCheck = checkGroupExist(groupDTO.getName());
+        boolean isCheck = checkGroupExist(groupDTO);
         if(isCheck){
             throw  new IllegalStateException("Nhóm người dùng đã tồn tại");
         }

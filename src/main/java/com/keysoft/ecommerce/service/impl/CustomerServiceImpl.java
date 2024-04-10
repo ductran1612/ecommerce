@@ -1,9 +1,15 @@
 package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.dto.CustomerDTO;
+import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.model.Customer;
+import com.keysoft.ecommerce.model.Group;
+import com.keysoft.ecommerce.model.User;
 import com.keysoft.ecommerce.repository.CustomerRepository;
+import com.keysoft.ecommerce.repository.GroupRepository;
+import com.keysoft.ecommerce.repository.UserRepository;
 import com.keysoft.ecommerce.service.CustomerService;
+import com.keysoft.ecommerce.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +29,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private ModelMapper modelMapper;
     @Override
     public Page<CustomerDTO> getAllCustomers(CustomerDTO criteria) {
@@ -39,7 +49,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean delete(String id) {
-        return false;
+        Customer customer = customerRepository.findById(Long.valueOf(id)).orElse(null);
+        if (customer == null) {
+            return false;
+        }
+        customer.setEnable(false);
+        customerRepository.save(customer);
+        return !customerRepository.findById(Long.valueOf(id)).orElse(null).getEnable();
     }
 
     @Override
@@ -49,7 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean checkExistUsername(CustomerDTO criteria) {
-        Customer customer = customerRepository.findByName(criteria.getUsername()).orElse(null);
+        Customer customer = customerRepository.findByUsername(criteria.getUsername()).orElse(null);
 
         if (customer == null)
             return false;
@@ -64,6 +80,22 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean save(CustomerDTO customerDTO) {
-        return false;
+        Customer customer;
+        User user;
+
+        if(customerDTO.getId() == null) {
+            if(checkExistUsername(customerDTO)) {
+                return false;
+            }
+        }
+        customer = modelMapper.map(customerDTO, Customer.class);
+        user = modelMapper.map(customerDTO, User.class);
+        customer.setEnable(true);
+        user.setEnable(true);
+
+        Group group = groupRepository.findByCode("khach-hang").orElse(null);
+        user.setGroup(group);
+        userRepository.save(user);
+        return modelMapper.map(customerRepository.save(customer), UserDTO.class).getId() != null;
     }
 }

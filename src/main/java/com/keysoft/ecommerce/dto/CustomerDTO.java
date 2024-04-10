@@ -11,7 +11,6 @@ public class CustomerDTO extends BaseDTO{
     private String fullName;
     private String gender;
     private String address;
-    private String phone;
     private String email;
     private Boolean enable;
 }
