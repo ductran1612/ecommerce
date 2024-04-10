@@ -27,6 +27,9 @@ public class Customer {
     @Column(name = "email")
     private String email;
 
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    private User user;
+
     @Column(name = "enable", nullable = false)
     private Boolean enable = Boolean.TRUE;
 }

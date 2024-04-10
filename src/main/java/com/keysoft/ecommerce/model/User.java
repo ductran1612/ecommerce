@@ -39,6 +39,10 @@ public class User implements UserDetails {
     @Column(name = "enable")
     private Boolean enable = Boolean.TRUE;
 
+    @OneToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
     @ManyToOne
     @JoinColumn(name = "user_group", referencedColumnName = "id")
     private Group group;

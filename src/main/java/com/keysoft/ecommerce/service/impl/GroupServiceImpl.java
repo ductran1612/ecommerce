@@ -2,6 +2,7 @@ package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.dto.GroupDTO;
 import com.keysoft.ecommerce.dto.RoleDTO;
+import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Group;
 import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.repository.GroupRepository;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -60,11 +58,17 @@ public class GroupServiceImpl implements GroupService {
         return GroupRepository.save(group).getId()!=null;
     }
 
-    public Boolean checkGroupExist(String name) {
-        log.info("SERVICE PROCESS: CHECK GROUP NAME USED, NAME: {}", name);
+    public Boolean checkGroupExist(GroupDTO criteria) {
+        Group group = GroupRepository.findByName(criteria.getName()).orElse(null);
 
-        Group group = GroupRepository.findByName(name).orElse(new Group());
-        return group.getId() != null;
+        if (group == null)
+            return false;
+
+        if (criteria.getId() == null) {
+            return true;
+        }
+
+        return (!Objects.equals(group.getId(), criteria.getId()));
     }
 
     @Override

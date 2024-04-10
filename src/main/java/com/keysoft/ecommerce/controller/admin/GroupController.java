@@ -33,10 +33,8 @@ public class GroupController {
     @GetMapping("/update/{id}")
     public ResponseEntity<?> updateGroup(@PathVariable("id") String id) {
         log.info("controller: update group form, id = {}", id);
-        Map<String, Object> responseData = new HashMap<>();
         try {
-            responseData.put("group", groupService.get(Long.valueOf(id)));
-            return ResponseEntity.ok(responseData);
+            return ResponseEntity.ok(groupService.get(Long.valueOf(id)));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -55,8 +53,6 @@ public class GroupController {
     @PostMapping(value = "/save")
     public ResponseEntity<?> save(@RequestBody GroupDTO groupDTO) {
         log.info("controller: save Group");
-        if (groupService.checkGroupExist(groupDTO.getName()))
-            return ResponseEntity.badRequest().body("Save error");
         boolean isSaved = groupService.save(groupDTO);
         if(isSaved){
             return ResponseEntity.ok("Save successfully");
