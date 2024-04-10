@@ -38,6 +38,9 @@ public class Transaction {
     @Column(name = "bill_invoice")
     private BigDecimal billInvoice;
 
+    @Column(name = "create_date")
+    private LocalDateTime createdDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;

@@ -1,5 +1,10 @@
 package com.keysoft.ecommerce.util;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+
+import static java.time.temporal.ChronoField.YEAR_OF_ERA;
+
 public class CodeHelper {
     public static String spawnCodeFromName(String name) {
         name = replaceVietnameseChars(name.trim());
@@ -15,5 +20,49 @@ public class CodeHelper {
         }
 
         return input;
+    }
+
+    public static String spawnCode(String entity, LocalDateTime createdDate) {
+        String code = String.valueOf(entity.charAt(0)).toUpperCase() + convertDate(createdDate) + convertNumber(0, true);
+        if(code.charAt(code.length() -1) == '-')
+            code.substring(0, code.length() - 1);
+        return code;
+    }
+
+    public static String convertDate(LocalDateTime createdDate) {
+        String day = createdDate.getDayOfMonth() < 10 ? "0" + createdDate.getDayOfMonth() : String.valueOf(createdDate.getDayOfMonth());
+
+        return day + convertMonth(createdDate) + convertYear(createdDate);
+    }
+
+    public static String convertNumber(long number, boolean isRandom) {
+        if (isRandom) {
+            // initialize a Random object somewhere; you should only need one
+            Random random = new Random();
+
+            // generate a random integer from 0 to 9999
+            number = random.nextInt(10000);
+        }
+
+        if (number < 10) {
+            return "000" + number;
+        } else if (number < 100) {
+            return "00" + number;
+        } else if (number < 1000) {
+            return "0" + number;
+        } else {
+            if (number > 9999) {
+                number = number % 10;
+            }
+            return String.valueOf(number);
+        }
+    }
+
+    public static String convertMonth(LocalDateTime date) {
+        return date.getMonthValue() < 10 ? "0" + date.getMonthValue() : String.valueOf(date.getMonthValue());
+    }
+
+    public static String convertYear(LocalDateTime date) {
+        return date.get(YEAR_OF_ERA) < 10 ? "0" + (date.get(YEAR_OF_ERA) % 2000) : String.valueOf(date.get(YEAR_OF_ERA) % 2000);
     }
 }

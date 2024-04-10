@@ -1,10 +1,14 @@
 package com.keysoft.ecommerce.service.impl;
 
+import com.keysoft.ecommerce.constant.TransactionStatusEnum;
 import com.keysoft.ecommerce.dto.TransactionDTO;
 import com.keysoft.ecommerce.model.Transaction;
 import com.keysoft.ecommerce.model.TransactionDetail;
+import com.keysoft.ecommerce.repository.TransactionDetailRepository;
 import com.keysoft.ecommerce.repository.TransactionRepository;
 import com.keysoft.ecommerce.service.TransactionService;
+import com.keysoft.ecommerce.util.CodeHelper;
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
+    private TransactionDetailRepository transactionDetailRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -43,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public boolean save(TransactionDTO transaction) {
+    public boolean save(TransactionDTO transaction) throws IllegalAccessException {
         log.info("service: save transaction");
 
         Transaction savedTransaction = modelMapper.map(transaction, Transaction.class);
@@ -76,7 +82,7 @@ public class TransactionServiceImpl implements TransactionService {
                     savedTransaction.setName(savedTransaction.getCustomer().getFullName());
                     savedTransaction.setPhone(savedTransaction.getCustomer().getPhone());
                     savedTransaction.setEmail(savedTransaction.getCustomer().getEmail());
-                    savedTransaction.setAddress(savedTransaction.getCustomer().getAddress() + ", " + savedTransaction.getCustomer().getDistrict() + ", " + savedTransaction.getCustomer().getCity());
+                    savedTransaction.setAddress(savedTransaction.getCustomer().getAddress());
                 }
             }
 
