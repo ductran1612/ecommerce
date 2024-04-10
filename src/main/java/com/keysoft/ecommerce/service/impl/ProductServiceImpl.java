@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean save(ProductDTO productDTO) {
         log.info("service: save product");
         Product product;
@@ -141,6 +143,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean delete(Long id) {
         log.info("service: delete product id: {}", id);
 

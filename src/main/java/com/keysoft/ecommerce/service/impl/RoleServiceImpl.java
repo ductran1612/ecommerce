@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean save(RoleDTO roleDTO) {
         Role role;
         if(roleDTO.getId() != null) {
@@ -38,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
         }else {
             role = modelMapper.map(roleDTO, Role.class);
         }
-        return roleRepository.save(role).getId() != null;
+        return roleRepository.save(role).getId() != null ;
     }
 
     @Override
@@ -47,6 +49,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean delete(Long id) {
         try {
             roleRepository.deleteById(id);

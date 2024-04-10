@@ -1,12 +1,17 @@
 package com.keysoft.ecommerce.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
+@Table(name = "transaction")
+@Getter
+@Setter
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -29,9 +29,6 @@ public class TransactionDetail {
     @Column(name = "sell_price", nullable = false, columnDefinition="decimal(13)")
     private BigDecimal sellPrice;
 
-    @Column(name = "sell_discount", nullable = false, columnDefinition="decimal(13)")
-    private BigDecimal sellDiscount;
-
     @Column(name = "total_price", nullable = false, columnDefinition="decimal(13)")
     private BigDecimal total;
 }

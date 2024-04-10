@@ -17,7 +17,10 @@ public class ProductImage {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "product")
     private Product product;
+
+    @Column(name = "enable")
+    private Boolean enable;
 }
