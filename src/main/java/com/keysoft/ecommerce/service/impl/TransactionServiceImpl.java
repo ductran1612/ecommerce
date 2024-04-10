@@ -4,6 +4,8 @@ import com.keysoft.ecommerce.constant.TransactionStatusEnum;
 import com.keysoft.ecommerce.dto.TransactionDTO;
 import com.keysoft.ecommerce.model.Transaction;
 import com.keysoft.ecommerce.model.TransactionDetail;
+import com.keysoft.ecommerce.repository.CustomerRepository;
+import com.keysoft.ecommerce.repository.ProductRepository;
 import com.keysoft.ecommerce.repository.TransactionDetailRepository;
 import com.keysoft.ecommerce.repository.TransactionRepository;
 import com.keysoft.ecommerce.service.TransactionService;
@@ -33,6 +35,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionDetailRepository transactionDetailRepository;
     @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -49,10 +55,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public boolean save(TransactionDTO transaction) throws IllegalAccessException {
+    public boolean save(TransactionDTO transactionDTO) throws IllegalAccessException {
         log.info("service: save transaction");
 
-        Transaction savedTransaction = modelMapper.map(transaction, Transaction.class);
+        Transaction savedTransaction = modelMapper.map(transactionDTO, Transaction.class);
 
         LocalDateTime modifiedDate = LocalDateTime.now();
 
@@ -60,21 +66,21 @@ public class TransactionServiceImpl implements TransactionService {
         savedTransaction.setTransactionDetails(Collections.emptySet());
 
 
-        if (transaction.getId() != null) {
-            Transaction oldTransaction = transactionRepository.findById(transaction.getId()).orElse(new Transaction());
+        if (transactionDTO.getId() != null) {
+            Transaction oldTransaction = transactionRepository.findById(transactionDTO.getId()).orElse(new Transaction());
 
             if (oldTransaction.getId() == null) {
                 throw new IllegalAccessException("Thông tin giao dịch không tồn tại");
             } else {
-                if (transaction.getDeletedDetails() != null && !transaction.getDeletedDetails().isEmpty()) {
-                    transactionDetailRepository.deleteAllById(transaction.getDeletedDetails());
+                if (transactionDTO.getDeletedDetails() != null && !transactionDTO.getDeletedDetails().isEmpty()) {
+                    transactionDetailRepository.deleteAllById(transactionDTO.getDeletedDetails());
                 }
             }
             savedTransaction.setCreatedDate(oldTransaction.getCreatedDate());
         } else {
             savedTransaction.setStatus(TransactionStatusEnum.PROGRESS.status);
-            if(transaction.getCustomer() != null && !StringUtils.isBlank(transaction.getCustomer().getUsername())) {
-                savedTransaction.setCustomer(customerRepository.findByUsernameAndEnableTrue(transaction.getCustomer().getUsername()));
+            if(transactionDTO.getCustomer() != null && !StringUtils.isBlank(transactionDTO.getCustomer().getUsername())) {
+                savedTransaction.setCustomer(customerRepository.findByUsernameAndEnableTrue(transactionDTO.getCustomer().getUsername()).orElse(null));
 
                 if(savedTransaction.getCustomer() == null || savedTransaction.getCustomer().getId() == null )
                     throw new IllegalAccessException("Thông tin khách hàng không tồn tại");
@@ -105,9 +111,8 @@ public class TransactionServiceImpl implements TransactionService {
                 if(detail.getProduct() == null || detail.getProduct().getId() == null) {
                     throw new IllegalAccessException("Thông tin sản phẩm không tồn tại");
                 }
-                detail.setSellDiscount(detail.getProduct().getDiscount());
                 detail.setSellPrice(detail.getProduct().getPrice());
-                detail.setTotal(detail.getSellPrice().subtract(detail.getSellDiscount()).multiply(BigDecimal.valueOf(detail.getQuantity())));
+                detail.setTotal(detail.getSellPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
 
                 savedTransaction.setBillInvoice(savedTransaction.getBillInvoice().add(detail.getTotal()));
             }
@@ -116,13 +121,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         savedTransaction.setTransactionDetails(details);
-        savedTransaction.setModifiedDate(modifiedDate);
 
-        transaction = modelMapper.map(transactionRepository.save(savedTransaction), TransactionDTO.class);
-        if(transaction.getId() == null)
-            throw new IllegalAccessException("Lưu giao dịch thất bại");
-
-        return transaction;
+        return transactionRepository.save(savedTransaction).getId() != null;
     }
 
     @Override

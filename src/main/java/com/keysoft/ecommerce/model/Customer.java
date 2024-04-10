@@ -12,12 +12,6 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 45)
-    private String username;
-
-    @Column(name = "password", nullable = false, length = 100)
-    private String password;
-
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
@@ -35,5 +29,4 @@ public class Customer {
 
     @Column(name = "enable", nullable = false)
     private Boolean enable = Boolean.TRUE;
-
 }

@@ -3,6 +3,7 @@ package com.keysoft.ecommerce.service.impl;
 import com.keysoft.ecommerce.dto.GroupDTO;
 import com.keysoft.ecommerce.dto.RoleDTO;
 import com.keysoft.ecommerce.model.Group;
+import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.repository.GroupRepository;
 import com.keysoft.ecommerce.service.GroupService;
 import com.keysoft.ecommerce.util.CodeHelper;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,20 +47,17 @@ public class GroupServiceImpl implements GroupService {
         }
 
         Set<RoleDTO> roles;
+        Group group;
 
-        if(groupDTO.getId() != null && GroupRepository.findById(groupDTO.getId()).isEmpty())
-            throw new NullPointerException("Nhóm người dùng không tồn tại");
-
-        if (StringUtils.hasText(groupDTO.getName()) && groupDTO.getRoles() != null) {
-            roles = Set.copyOf(groupDTO.getRoles());
-        } else {
-            throw new NullPointerException("Không có quyền của nhóm hợp lệ");
+        if(groupDTO.getId() != null){
+            group = GroupRepository.findById(groupDTO.getId()).orElse(null);
+            if(group != null)
+                group.getRoles().removeAll(group.getRoles());
         }
 
-        groupDTO.setRoles(roles);
         groupDTO.setCode(CodeHelper.spawnCodeFromName(groupDTO.getName()));
-
-        return GroupRepository.save(modelMapper.map(groupDTO, Group.class)).getId() != null;
+        group = modelMapper.map(groupDTO, Group.class);
+        return GroupRepository.save(group).getId()!=null;
     }
 
     public Boolean checkGroupExist(String name) {

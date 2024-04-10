@@ -34,14 +34,13 @@ public class CategoryController {
             return ResponseEntity.ok(result);
         }
     }
-//
-//    @GetMapping("/add")
-//    public ResponseEntity<?> addCategory() {
-//        log.info("controller: add category form");
-//        Map<String, Object> responseData = new HashMap<>();
-//        responseData.put("category", new CategoryDTO());
-//        return ResponseEntity.ok(responseData);
-//    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getAllCategoriesNotPagination() {
+        log.info("controller: get all categories not pagination");
+        List<CategoryDTO> result = categoryService.getAllCategoriesNotPagination();
+        return ResponseEntity.ok(result);
+    }
 
     @GetMapping("/update/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable("id") String id) {

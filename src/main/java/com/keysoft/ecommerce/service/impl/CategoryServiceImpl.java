@@ -42,6 +42,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<CategoryDTO> getAllCategoriesNotPagination() {
+        log.info("service: get all categories no pagination");
+        List<Category> listEntity = categoryRepository.findAll();
+        List<CategoryDTO> results = new ArrayList<>();
+        for(Category entity : listEntity) {
+            results.add(modelMapper.map(entity, CategoryDTO.class));
+        }
+        return results;
+    }
+
+    @Override
     public Page<CategoryDTO> getAllCategories(CategoryDTO categoryDTO) {
         log.info("service: get all categories");
         Page<Category> page = categoryRepository.findAll(PageRequest.of(categoryDTO.getPage(), categoryDTO.getSize()));

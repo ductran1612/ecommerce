@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CategoryService {
     List<CategoryDTO> getRootCategories();
+    List<CategoryDTO> getAllCategoriesNotPagination();
     Page<CategoryDTO> getAllCategories(CategoryDTO categoryDTO);
     boolean save(CategoryDTO categoryDTO);
 

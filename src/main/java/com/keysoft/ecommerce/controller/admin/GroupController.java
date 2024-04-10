@@ -55,6 +55,8 @@ public class GroupController {
     @PostMapping(value = "/save")
     public ResponseEntity<?> save(@RequestBody GroupDTO groupDTO) {
         log.info("controller: save Group");
+        if (groupService.checkGroupExist(groupDTO.getName()))
+            return ResponseEntity.badRequest().body("Save error");
         boolean isSaved = groupService.save(groupDTO);
         if(isSaved){
             return ResponseEntity.ok("Save successfully");
