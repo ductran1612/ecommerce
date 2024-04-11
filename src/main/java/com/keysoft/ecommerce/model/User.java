@@ -24,7 +24,11 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "password")
     private String password;
 
     @Column(name = "full_name")

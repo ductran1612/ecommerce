@@ -8,6 +8,7 @@ import lombok.Setter;
 public class CustomerDTO extends BaseDTO{
     private Long id;
     private String username;
+    private String password;
     private String fullName;
     private String gender;
     private String address;
