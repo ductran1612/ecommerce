@@ -169,16 +169,15 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
         if(transaction == null)
             throw new IllegalAccessException("Không thể huỷ giao dịch");
-
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
+            throw new IllegalAccessException("Không thể huỷ giao dịch");
         if(transaction.getTransactionDetails() != null) {
             for(TransactionDetail detail : transaction.getTransactionDetails()) {
                 int newQuantity = detail.getQuantity() + detail.getProduct().getQuantity();
                 detail.getProduct().setQuantity(newQuantity);
+                productRepository.save(detail.getProduct());
             }
         }
-
-        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
-            throw new IllegalAccessException("Không thể huỷ giao dịch");
 
         transaction.setStatus(TransactionStatusEnum.CANCEL.status);
 

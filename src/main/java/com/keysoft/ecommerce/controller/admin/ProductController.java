@@ -85,4 +85,11 @@ public class ProductController {
         }
     }
 
+    @GetMapping(value = "/api/list")
+    public ResponseEntity<List<ProductDTO>> getList(@RequestParam(value = "keyword", required = false) String keyword) {
+        log.info("process=search-product-by-keyword, keyword: {}", keyword);
+        List<ProductDTO> results = productService.searchByKeyword(keyword);
+        return ResponseEntity.ok(results.isEmpty() ? null : results);
+    }
+
 }

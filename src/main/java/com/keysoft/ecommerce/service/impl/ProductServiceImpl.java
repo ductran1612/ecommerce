@@ -9,6 +9,7 @@ import com.keysoft.ecommerce.repository.CategoryRepository;
 import com.keysoft.ecommerce.repository.ProductImageRepository;
 import com.keysoft.ecommerce.repository.ProductRepository;
 import com.keysoft.ecommerce.service.ProductService;
+import com.keysoft.ecommerce.specification.ProductSpecification;
 import com.keysoft.ecommerce.util.CodeHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,6 +38,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ProductImageRepository productImageRepository;
+    @Autowired
+    private ProductSpecification productSpecification;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -166,6 +170,23 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
         return !productRepository.findById(Long.valueOf(id)).orElse(new Product()).getEnable();
 
+    }
+
+    @Override
+    public List<ProductDTO> searchByKeyword(String keyword) {
+        if (StringUtils.hasText(keyword)) {
+            List<Product> results = productRepository.findAll(productSpecification.filterByName(keyword));
+
+            List<ProductDTO> resultsDTO = new ArrayList<>();
+
+            for (Product entity : results) {
+                resultsDTO.add(modelMapper.map(entity, ProductDTO.class));
+            }
+
+            return resultsDTO;
+        }
+
+        return Collections.emptyList();
     }
 
     public boolean checkNameUsed(ProductDTO criteria) {
