@@ -15,6 +15,9 @@ public class Customer {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @Column(name = "password", nullable = false)
     private String password;
 

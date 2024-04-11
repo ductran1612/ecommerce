@@ -29,9 +29,6 @@ public class Transaction {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "phone")
-    private String phone;
-
     @Column(name = "note")
     private String note;
 
@@ -50,4 +47,7 @@ public class Transaction {
 
     @Column(name = "status")
     private Integer status = 1;
+
+    @Column(name = "enable")
+    private Boolean enable;
 }

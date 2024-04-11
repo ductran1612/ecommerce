@@ -7,7 +7,7 @@ public interface ProductService {
     Page<ProductDTO> getAllProducts(ProductDTO productDTO);
     boolean save(ProductDTO productDTO);
 
-    ProductDTO get(Long id);
+    ProductDTO get(String id);
 
-    boolean delete(Long id);
+    boolean delete(String id);
 }

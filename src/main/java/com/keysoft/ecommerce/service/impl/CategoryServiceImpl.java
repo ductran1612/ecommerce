@@ -47,7 +47,11 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> listEntity = categoryRepository.findAll();
         List<CategoryDTO> results = new ArrayList<>();
         for(Category entity : listEntity) {
-            results.add(modelMapper.map(entity, CategoryDTO.class));
+            CategoryDTO dto = modelMapper.map(entity, CategoryDTO.class);
+            if(dto.getParentsId() != null) {
+                dto.setParentsCategory(modelMapper.map(categoryRepository.findById(dto.getParentsId()), CategoryDTO.class));
+            }
+            results.add(dto);
         }
         return results;
     }

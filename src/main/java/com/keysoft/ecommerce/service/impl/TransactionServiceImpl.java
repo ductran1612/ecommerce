@@ -2,6 +2,7 @@ package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.constant.TransactionStatusEnum;
 import com.keysoft.ecommerce.dto.TransactionDTO;
+import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.Transaction;
 import com.keysoft.ecommerce.model.TransactionDetail;
 import com.keysoft.ecommerce.repository.CustomerRepository;
@@ -22,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -79,38 +77,34 @@ public class TransactionServiceImpl implements TransactionService {
             savedTransaction.setCreatedDate(oldTransaction.getCreatedDate());
         } else {
             savedTransaction.setStatus(TransactionStatusEnum.PROGRESS.status);
-            if(transactionDTO.getCustomer() != null && !StringUtils.isBlank(transactionDTO.getCustomer().getUsername())) {
+            if (transactionDTO.getCustomer() != null && !StringUtils.isBlank(transactionDTO.getCustomer().getUsername())) {
                 savedTransaction.setCustomer(customerRepository.findByUsernameAndEnableTrue(transactionDTO.getCustomer().getUsername()).orElse(null));
 
-                if(savedTransaction.getCustomer() == null || savedTransaction.getCustomer().getId() == null )
+                if (savedTransaction.getCustomer() == null || savedTransaction.getCustomer().getId() == null)
                     throw new IllegalAccessException("Thông tin khách hàng không tồn tại");
                 else {
                     savedTransaction.setName(savedTransaction.getCustomer().getFullName());
-                    savedTransaction.setPhone(savedTransaction.getCustomer().getPhone());
                     savedTransaction.setEmail(savedTransaction.getCustomer().getEmail());
                     savedTransaction.setAddress(savedTransaction.getCustomer().getAddress());
                 }
             }
 
-            if(StringUtils.isEmpty(savedTransaction.getCode()))
+            if (StringUtils.isEmpty(savedTransaction.getCode()))
                 savedTransaction.setCode(CodeHelper.spawnCode("T", LocalDateTime.now()));
 
             savedTransaction.setCreatedDate(modifiedDate);
         }
 
-        if(savedTransaction.getBillInvoice() == null)
+        if (savedTransaction.getBillInvoice() == null)
             savedTransaction.setBillInvoice(BigDecimal.valueOf(0));
 
         for (TransactionDetail detail : details) {
-            if(detail.getProduct().getId() == null) {
-                if(!StringUtils.isBlank(detail.getProduct().getCode())) {
-                    detail.setProduct(productRepository.findByCodeIgnoreCase(detail.getProduct().getCode()).orElse(null));
-                } else {
-                    detail.setProduct(null);
-                }
-                if(detail.getProduct() == null || detail.getProduct().getId() == null) {
-                    throw new IllegalAccessException("Thông tin sản phẩm không tồn tại");
-                }
+            if (detail.getProduct().getId() == null) {
+                throw new IllegalAccessException("Thông tin sản phẩm không tồn tại");
+
+            } else {
+                Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
+                detail.setProduct(product);
                 detail.setSellPrice(detail.getProduct().getPrice());
                 detail.setTotal(detail.getSellPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
 
@@ -119,20 +113,76 @@ public class TransactionServiceImpl implements TransactionService {
 
             detail.setTransaction(savedTransaction);
         }
-
+        savedTransaction.setStatus(1);
         savedTransaction.setTransactionDetails(details);
 
         return transactionRepository.save(savedTransaction).getId() != null;
     }
 
     @Override
-    public TransactionDTO get(Long id) {
-        return null;
+    public TransactionDTO get(String id) {
+        TransactionDTO transactionDTO;
+        try {
+            transactionDTO = modelMapper.map(transactionRepository.findById(Long.valueOf(id)).orElse(null), TransactionDTO.class);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Id không hợp lệ: " + id);
+        }
+        return transactionDTO;
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public boolean delete(Long id) {
-        return false;
+    public boolean delete(String id) {
+        Transaction transaction;
+        try {
+            transaction = transactionRepository.findById(Long.valueOf(id)).orElse(null);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Id không hợp lệ: " + id);
+        }
+
+        if (transaction == null) {
+            return false;
+        }
+        transaction.setEnable(false);
+        transactionRepository.save(transaction);
+        return !transactionRepository.findById(Long.valueOf(id)).orElse(new Transaction()).getEnable();
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public boolean cancel(String id) throws IllegalAccessException {
+        long idL;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException exception) {
+            throw new IllegalAccessException("Thông tin giao dịch không phù hợp");
+        }
+        Transaction transaction = transactionRepository.findById(idL).orElse(null);
+
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
+            throw new IllegalAccessException("Không thể huỷ giao dịch");
+
+        transaction.setStatus(TransactionStatusEnum.CANCEL.status);
+
+        return transactionRepository.save(transaction).getStatus() == 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Throwable.class})
+    public boolean confirm(String id) throws IllegalAccessException {
+        long idL;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException exception) {
+            throw new IllegalAccessException("Thông tin giao dịch không phù hợp");
+        }
+        Transaction transaction = transactionRepository.findById(idL).orElse(null);
+
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
+            throw new IllegalAccessException("Không thể hoàn thành giao dịch");
+
+        transaction.setStatus(TransactionStatusEnum.SUCCESS.status);
+
+        return transactionRepository.save(transaction).getStatus() == 2;
     }
 }
