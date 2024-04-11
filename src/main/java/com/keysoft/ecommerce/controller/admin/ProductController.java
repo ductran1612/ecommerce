@@ -69,7 +69,7 @@ public class ProductController {
         if(isSaved){
             return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lư");
+        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @PostMapping("/delete/{id}")

@@ -38,7 +38,7 @@ public class CategoryController {
     @GetMapping("/list")
     public ResponseEntity<?> getAllParentsCategories() {
         log.info("controller: get all categories not pagination");
-        List<CategoryDTO> result = categoryService.getAllParentsCategories();
+        List<CategoryDTO> result = categoryService.getRootCategories();
         return ResponseEntity.ok(result);
     }
 

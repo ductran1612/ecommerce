@@ -50,16 +50,21 @@ public class TransactionController {
                 return ResponseEntity.ok().build();
             return ResponseEntity.badRequest().body("Lỗi khi lưu");
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
         }
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String id) {
         log.info("controller: delete transaction");
-        boolean isDeleted = transactionService.delete(id);
-        if(isDeleted) {
-            return ResponseEntity.ok().build();
+        try{
+            boolean isDeleted = transactionService.delete(id);
+            if (isDeleted) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi xoá");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi khi xoá");
         }
     }
 }
