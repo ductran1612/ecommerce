@@ -105,6 +105,13 @@ public class TransactionServiceImpl implements TransactionService {
             } else {
                 Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
                 detail.setProduct(product);
+                if(detail.getQuantity() < 0)
+                    throw new IllegalAccessException("Số lượng nhập vào không chính xác");
+                int newQuantity = detail.getProduct().getQuantity() - detail.getQuantity();
+                if (newQuantity < 0)
+                    throw new IllegalAccessException("Số lương tồn kho của sản phẩm: " +detail.getProduct().getName() + " không đủ");
+                detail.getProduct().setQuantity(newQuantity);
+                productRepository.save(detail.getProduct());
                 detail.setSellPrice(detail.getProduct().getPrice());
                 detail.setTotal(detail.getSellPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
 
@@ -160,6 +167,15 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalAccessException("Thông tin giao dịch không phù hợp");
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
+        if(transaction == null)
+            throw new IllegalAccessException("Không thể huỷ giao dịch");
+
+        if(transaction.getTransactionDetails() != null) {
+            for(TransactionDetail detail : transaction.getTransactionDetails()) {
+                int newQuantity = detail.getQuantity() + detail.getProduct().getQuantity();
+                detail.getProduct().setQuantity(newQuantity);
+            }
+        }
 
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
             throw new IllegalAccessException("Không thể huỷ giao dịch");
@@ -180,6 +196,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
 
+        assert transaction != null;
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
             throw new IllegalAccessException("Không thể hoàn thành giao dịch");
 

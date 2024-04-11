@@ -76,7 +76,10 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable("id") String id){
         log.info("controller: delete product id: {}", id);
         try{
-            return ResponseEntity.ok(productService.delete(id));
+            boolean isDeleted = productService.delete(id);
+            if(isDeleted)
+                return ResponseEntity.ok("Xoá thành công");
+            return ResponseEntity.badRequest().body("Xoá không thành công!");
         }catch (NumberFormatException e){
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }

@@ -46,16 +46,18 @@ public class CustomerController {
     public ResponseEntity<?> save(@RequestBody CustomerDTO customer) {
         boolean isSaved = customerService.save(customer);
         if(isSaved){
-            return ResponseEntity.ok("Save successfully");
+            return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Save error");
+        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteCustomer(@PathVariable("id") String id){
         log.info("controller: delete customer id: {}", id);
         try{
-            return ResponseEntity.ok(customerService.delete(id));
+            if(customerService.delete(id))
+                return ResponseEntity.ok("Xoá thành công");
+            return ResponseEntity.badRequest().body("Xoá không thành công!");
         }catch (NumberFormatException e){
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }

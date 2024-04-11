@@ -60,11 +60,39 @@ public class TransactionController {
         try{
             boolean isDeleted = transactionService.delete(id);
             if (isDeleted) {
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok("Xoá thành công");
             }
             return ResponseEntity.badRequest().body("Lỗi khi xoá");
         }catch (Exception e) {
             return ResponseEntity.badRequest().body("Lỗi khi xoá");
+        }
+    }
+
+    @PostMapping("/confirm/{id}")
+    public ResponseEntity<?> confirm(@PathVariable("id") String id) {
+        log.info("controller: confirm transaction");
+        try{
+            boolean isConfirmed = transactionService.confirm(id);
+            if (isConfirmed) {
+                return ResponseEntity.ok("Đã hoàn thành đơn hàng");
+            }
+            return ResponseEntity.badRequest().body("Lỗi không thể hoàn thành đơn hàng");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi không thể hoàn thành đơn hàng");
+        }
+    }
+
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<?> cancel(@PathVariable("id") String id) {
+        log.info("controller: cancel transaction");
+        try{
+            boolean isCanceled = transactionService.cancel(id);
+            if (isCanceled) {
+                return ResponseEntity.ok("Đã huỷ đơn hàng");
+            }
+            return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
         }
     }
 }

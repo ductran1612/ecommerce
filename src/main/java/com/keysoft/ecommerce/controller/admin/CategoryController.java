@@ -65,7 +65,9 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") String id) {
         log.info("controller: delete category, id = {}", id);
         try{
-            return ResponseEntity.ok(categoryService.delete(Long.valueOf(id)));
+            if(categoryService.delete(Long.valueOf(id)))
+                return ResponseEntity.ok("Xoá thành công");
+            return ResponseEntity.badRequest().body("Xoá không thành công!");
         }catch (NumberFormatException e){
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }
