@@ -57,8 +57,8 @@ public class RoleController {
         log.info("controller: save role");
         boolean isSaved = roleService.save(roleDTO);
         if(isSaved){
-            return ResponseEntity.ok("Save successfully");
+            return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Save error");
+        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 }

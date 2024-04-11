@@ -36,24 +36,18 @@ public class CategoryServiceImpl implements CategoryService {
 
         for(Category item : rootCategories) {
             CategoryDTO dto = modelMapper.map(item, CategoryDTO.class);
+            dto.setSubCategories(getSubCategories(item.getId()));
             results.add(dto);
         }
         return results;
     }
 
-    @Override
-    public List<CategoryDTO> getAllCategoriesNotPagination() {
-        log.info("service: get all categories no pagination");
-        List<Category> listEntity = categoryRepository.findAll();
-        List<CategoryDTO> results = new ArrayList<>();
-        for(Category entity : listEntity) {
-            CategoryDTO dto = modelMapper.map(entity, CategoryDTO.class);
-            if(dto.getParentsId() != null) {
-                dto.setParentsCategory(modelMapper.map(categoryRepository.findById(dto.getParentsId()), CategoryDTO.class));
-            }
-            results.add(dto);
+    public List<CategoryDTO> getSubCategories(Long id) {
+        List<CategoryDTO> subDTO = new ArrayList<>();
+        for (Category category : categoryRepository.findAllByParentsId(id)) {
+            subDTO.add(modelMapper.map(category, CategoryDTO.class));
         }
-        return results;
+        return subDTO;
     }
 
     @Override

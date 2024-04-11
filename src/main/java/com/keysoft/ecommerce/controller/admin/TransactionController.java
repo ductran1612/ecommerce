@@ -30,4 +30,36 @@ public class TransactionController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @GetMapping("/update/{id}")
+    public ResponseEntity<?> updateTransaction(@PathVariable("id") String id) {
+        log.info("controller: edit transaction");
+        try{
+            return ResponseEntity.ok(transactionService.get(id));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("Không tìm thấy giao dịch phù hợp");
+        }
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody TransactionDTO transactionDTO) {
+        log.info("controller: save transaction");
+        try {
+            boolean isSaved = transactionService.save(transactionDTO);
+            if(isSaved)
+                return ResponseEntity.ok().build();
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") String id) {
+        log.info("controller: delete transaction");
+        boolean isDeleted = transactionService.delete(id);
+        if(isDeleted) {
+            return ResponseEntity.ok().build();
+        }
+    }
 }

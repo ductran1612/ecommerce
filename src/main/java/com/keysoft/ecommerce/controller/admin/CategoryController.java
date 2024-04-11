@@ -36,9 +36,9 @@ public class CategoryController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getAllCategoriesNotPagination() {
+    public ResponseEntity<?> getAllParentsCategories() {
         log.info("controller: get all categories not pagination");
-        List<CategoryDTO> result = categoryService.getAllCategoriesNotPagination();
+        List<CategoryDTO> result = categoryService.getAllParentsCategories();
         return ResponseEntity.ok(result);
     }
 
@@ -76,9 +76,9 @@ public class CategoryController {
         log.info("controller: save category");
         boolean isSaved = categoryService.save(categoryDTO);
         if(isSaved){
-            return ResponseEntity.ok("Save successfully");
+            return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Save error");
+        return ResponseEntity.badRequest().body("Lỗi khi lư");
     }
 
     @GetMapping("/listParents")

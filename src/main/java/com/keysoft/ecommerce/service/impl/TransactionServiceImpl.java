@@ -139,9 +139,11 @@ public class TransactionServiceImpl implements TransactionService {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Id không hợp lệ: " + id);
         }
-
         if (transaction == null) {
             return false;
+        }
+        if(transaction.getStatus() == 1) {
+            throw new IllegalArgumentException("Không thể xoá đơn hàng đang xử lý");
         }
         transaction.setEnable(false);
         transactionRepository.save(transaction);

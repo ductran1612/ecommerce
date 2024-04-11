@@ -55,7 +55,7 @@ public class ProductController {
         log.info("controller: update product form, id = {}", id);
         Map<String, Object> responseData = new HashMap<>();
         try {
-            responseData.put("product", productService.get(Long.valueOf(id)));
+            responseData.put("product", productService.get(id));
             responseData.put("rootCategories", categoryService.getRootCategories());
             return ResponseEntity.ok(responseData);
         } catch (NumberFormatException e) {
@@ -67,16 +67,16 @@ public class ProductController {
     public ResponseEntity<?> save(@RequestBody ProductDTO product) {
         boolean isSaved = productService.save(product);
         if(isSaved){
-            return ResponseEntity.ok("Save successfully");
+            return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Save error");
+        return ResponseEntity.badRequest().body("Lỗi khi lư");
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable("id") String id){
         log.info("controller: delete product id: {}", id);
         try{
-            return ResponseEntity.ok(productService.delete(Long.valueOf(id)));
+            return ResponseEntity.ok(productService.delete(id));
         }catch (NumberFormatException e){
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }

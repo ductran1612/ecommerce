@@ -55,8 +55,8 @@ public class GroupController {
         log.info("controller: save Group");
         boolean isSaved = groupService.save(groupDTO);
         if(isSaved){
-            return ResponseEntity.ok("Save successfully");
+            return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Save error");
+        return ResponseEntity.badRequest().body("Lỗi khi lư");
     }
 }
