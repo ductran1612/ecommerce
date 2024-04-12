@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductDTO> getAllProducts(ProductDTO productDTO) {
         log.info("service: get all products");
-        Page<Product> page = productRepository.findAll(PageRequest.of(productDTO.getPage(), productDTO.getSize()));
+        Page<Product> page = productRepository.findAll(productSpecification.filter(productDTO), PageRequest.of(productDTO.getPage(), productDTO.getSize()));
         List<ProductDTO> results = new ArrayList<>();
 
         for(Product item : page.getContent()){

@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.specification;
 
+import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.model.Product;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,5 +22,13 @@ public class ProductSpecification {
             return cb.and(predicates.toArray(Predicate[]::new));
         };
 
+    }
+
+    public Specification<Product> filter(ProductDTO productDTO) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("enable"), true));
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
     }
 }

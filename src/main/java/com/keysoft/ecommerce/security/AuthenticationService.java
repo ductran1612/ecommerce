@@ -1,7 +1,9 @@
 package com.keysoft.ecommerce.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.jwt.JwtService;
+import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.model.User;
 import com.keysoft.ecommerce.repository.UserRepository;
 import com.keysoft.ecommerce.token.Token;
@@ -13,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthenticationService {
@@ -25,20 +30,18 @@ public class AuthenticationService {
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     private JwtService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .fullName(request.getFullName())
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
+    public AuthenticationResponse register(UserDTO userDTO) {
+        User user = User.builder()
+                .fullName(userDTO.getFullName())
+                .username(userDTO.getUsername())
+                .password(BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt(10)))
                 .build();
-        var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        User savedUser = userRepository.save(user);
+
+        String refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -46,18 +49,19 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(UserDTO userDTO) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
+                        userDTO.getUsername(),
+                        userDTO.getPassword()
                 )
         );
-        var user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByUsername(userDTO.getUsername())
                 .orElseThrow();
-//        CustomUserDetails userDetails = new CustomUserDetails(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", user.getGroup().getRoles());
+        String jwtToken = jwtService.generateToken(claims, user);
+        String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -67,7 +71,7 @@ public class AuthenticationService {
     }
 
     private void saveUserToken(User user, String jwtToken) {
-        var token = Token.builder()
+        Token token = Token.builder()
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
@@ -103,12 +107,11 @@ public class AuthenticationService {
         if (username != null) {
             User user = this.userRepository.findByUsername(username)
                     .orElseThrow();
-//            CustomUserDetails userDetails = new CustomUserDetails(user);
             if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
+                String accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
+                AuthenticationResponse authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();

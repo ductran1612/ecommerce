@@ -1,9 +1,8 @@
 package com.keysoft.ecommerce.controller.admin;
 
-import com.keysoft.ecommerce.security.AuthenticationRequest;
+import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.security.AuthenticationResponse;
 import com.keysoft.ecommerce.security.AuthenticationService;
-import com.keysoft.ecommerce.security.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +24,17 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody UserDTO user
     ) {
         log.info("register");
-        return ResponseEntity.ok(service.register(request));
+        return ResponseEntity.ok(service.register(user));
     }
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request
+            @RequestBody UserDTO user
     ) {
-        return ResponseEntity.ok(service.authenticate(request));
+        return ResponseEntity.ok(service.authenticate(user));
     }
 
     @PostMapping("/refresh-token")

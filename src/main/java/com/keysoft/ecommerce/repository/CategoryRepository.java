@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
     List<Category> findAllByParentsId(Long id);
     List<Category> findByParentsIdIsNull();
+
 //    Optional<Category> findByCode(String code);
 
 //    Optional<Category> findByName(String name);

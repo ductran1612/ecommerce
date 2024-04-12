@@ -34,8 +34,6 @@ public class SecurityConfig {
     private UserRepository userRepository;
     @Autowired
     private AuthenticationProvider authenticationProvider;
-//    @Autowired
-//    private CustomUserDetailService userDetailService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,13 +42,13 @@ public class SecurityConfig {
                 .authorizeRequests(auth ->
                         auth
                                 .requestMatchers("/auth/**").permitAll()
-//                                .requestMatchers("/resources/assets/**").permitAll()
-//                                .requestMatchers("/admin/home").hasAnyRole("CASHIER", "WAREHOUSE")
-//                                .requestMatchers("/admin/group/**", "/admin/user/**", "/admin/customer/**").hasRole("ADMIN")
-//                                .requestMatchers("/admin/category/**", "/admin/customer/**", "/admin/supplier/**").hasRole("MANAGER")
-//                                .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
-//                                .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
-//                                .requestMatchers("/shop/**", "/customer/**").hasRole("CUSTOMER")
+                                .requestMatchers("/resources/assets/**").permitAll()
+                                .requestMatchers("/admin/home").hasAnyRole("CASHIER", "WAREHOUSE")
+                                .requestMatchers("/admin/group/**", "/admin/user/**", "/admin/customer/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/category/**", "/admin/customer/**").hasRole("MANAGER")
+                                .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
+                                .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
+                                .requestMatchers("/shop/**", "/customer/**").hasRole("CUSTOMER")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

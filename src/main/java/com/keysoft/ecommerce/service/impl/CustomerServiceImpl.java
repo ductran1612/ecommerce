@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<CustomerDTO> getAllCustomers(CustomerDTO criteria) {
         log.info("service: get all customers");
-        Page<Customer> page = customerRepository.findAll(PageRequest.of(criteria.getPage(), criteria.getSize()));
+        Page<Customer> page = customerRepository.findAllByEnableTrue(PageRequest.of(criteria.getPage(), criteria.getSize()));
         List<CustomerDTO> result = new ArrayList<>();
 
         for(Customer item : page.getContent()) {
