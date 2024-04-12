@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.keysoft.ecommerce.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,7 @@ public class User implements UserDetails {
     private Customer customer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_group", referencedColumnName = "id")
     private Group group;
 

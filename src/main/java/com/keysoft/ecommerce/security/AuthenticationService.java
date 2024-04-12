@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class AuthenticationService {
@@ -40,7 +42,7 @@ public class AuthenticationService {
                 .password(BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt(10)))
                 .build();
         User savedUser = userRepository.save(user);
-
+        String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
@@ -59,7 +61,11 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(userDTO.getUsername())
                 .orElseThrow();
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", user.getGroup().getRoles());
+        Set<String> resultsRole = new HashSet<>();
+        for(Role role : user.getGroup().getRoles()) {
+            resultsRole.add(role.getCode());
+        }
+        claims.put("roles", resultsRole);
         String jwtToken = jwtService.generateToken(claims, user);
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);

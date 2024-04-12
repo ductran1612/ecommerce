@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,11 @@ public class Role {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "code", nullable = false)
+    private String code;
+
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private Set<Group> groups;
 
     @ManyToMany(mappedBy = "roles")

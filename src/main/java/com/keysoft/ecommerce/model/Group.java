@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,9 +23,11 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy = "group")
+    @JsonIgnore
     private Set<User> users;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinTable(name = "role_group",joinColumns = @JoinColumn(name = "user_group"),inverseJoinColumns = @JoinColumn(name = "roles"))
     private Set<Role> roles;
 }
