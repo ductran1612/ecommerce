@@ -1,15 +1,18 @@
 package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.dto.CustomerDTO;
+import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Group;
+import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.User;
 import com.keysoft.ecommerce.repository.CustomerRepository;
 import com.keysoft.ecommerce.repository.GroupRepository;
 import com.keysoft.ecommerce.repository.UserRepository;
 import com.keysoft.ecommerce.service.CustomerService;
 import com.keysoft.ecommerce.service.GroupService;
+import com.keysoft.ecommerce.specification.CustomerSpecification;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +38,8 @@ public class CustomerServiceImpl implements CustomerService {
     private GroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CustomerSpecification customerSpecification;
     @Autowired
     private ModelMapper modelMapper;
     @Override
@@ -101,4 +108,22 @@ public class CustomerServiceImpl implements CustomerService {
         userRepository.save(user);
         return modelMapper.map(customerRepository.save(customer), UserDTO.class).getId() != null;
     }
+
+    @Override
+    public List<CustomerDTO> searchByKeyword(String keyword) {
+        if (StringUtils.hasText(keyword)) {
+            List<Customer> results = customerRepository.findAll(customerSpecification.filterByName(keyword));
+
+            List<CustomerDTO> resultsDTO = new ArrayList<>();
+
+            for (Customer entity : results) {
+                resultsDTO.add(modelMapper.map(entity, CustomerDTO.class));
+            }
+
+            return resultsDTO;
+        }
+
+        return Collections.emptyList();
+    }
+
 }

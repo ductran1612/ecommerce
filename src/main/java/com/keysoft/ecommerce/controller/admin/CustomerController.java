@@ -1,6 +1,7 @@
 package com.keysoft.ecommerce.controller.admin;
 
 import com.keysoft.ecommerce.dto.CustomerDTO;
+import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -61,5 +63,12 @@ public class CustomerController {
         }catch (NumberFormatException e){
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }
+    }
+
+    @GetMapping(value = "/api/list")
+    public ResponseEntity<List<CustomerDTO>> getList(@RequestParam(value = "keyword", required = false) String keyword) {
+        log.info("controller: search list customer by keyword, keyword: {}", keyword);
+        List<CustomerDTO> results = customerService.searchByKeyword(keyword);
+        return ResponseEntity.ok(results.isEmpty() ? null : results);
     }
 }
