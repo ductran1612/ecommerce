@@ -1,7 +1,7 @@
 package com.keysoft.ecommerce.constant;
 
 public enum TransactionStatusEnum {
-    SUCCESS(2),
+    CONFIRMED(2),
     CANCEL(0),
     PROGRESS(1);
 

@@ -21,4 +21,5 @@ public class ProductDTO extends BaseDTO{
     private Set<CategoryDTO> categories;
     private List<Long> productCategories;
     private Boolean enable;
+    private Integer status;
 }

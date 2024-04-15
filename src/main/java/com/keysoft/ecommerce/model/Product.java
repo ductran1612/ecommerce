@@ -38,6 +38,9 @@ public class Product {
     @Column(name = "enable")
     private Boolean enable;
 
+    @Column(name = "status")
+    private Integer status = 0;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"),
     inverseJoinColumns = @JoinColumn(name = "category_id"))

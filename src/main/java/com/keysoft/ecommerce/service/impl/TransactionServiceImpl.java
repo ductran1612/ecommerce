@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.service.impl;
 
+import com.keysoft.ecommerce.constant.ProductStatusEnum;
 import com.keysoft.ecommerce.constant.TransactionStatusEnum;
 import com.keysoft.ecommerce.dto.TransactionDTO;
 import com.keysoft.ecommerce.model.Product;
@@ -93,6 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
                 savedTransaction.setCode(CodeHelper.spawnCode("T", LocalDateTime.now()));
 
             savedTransaction.setCreatedDate(modifiedDate);
+            savedTransaction.setEnable(true);
         }
 
         if (savedTransaction.getBillInvoice() == null)
@@ -110,8 +112,6 @@ public class TransactionServiceImpl implements TransactionService {
                 int newQuantity = detail.getProduct().getQuantity() - detail.getQuantity();
                 if (newQuantity < 0)
                     throw new IllegalAccessException("Số lương tồn kho của sản phẩm: " +detail.getProduct().getName() + " không đủ");
-                detail.getProduct().setQuantity(newQuantity);
-                productRepository.save(detail.getProduct());
                 detail.setSellPrice(detail.getProduct().getPrice());
                 detail.setTotal(detail.getSellPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
 
@@ -120,7 +120,7 @@ public class TransactionServiceImpl implements TransactionService {
 
             detail.setTransaction(savedTransaction);
         }
-        savedTransaction.setStatus(1);
+        savedTransaction.setStatus(TransactionStatusEnum.PROGRESS.status);
         savedTransaction.setTransactionDetails(details);
 
         return transactionRepository.save(savedTransaction).getId() != null;
@@ -169,19 +169,22 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
         if(transaction == null)
             throw new IllegalAccessException("Không thể huỷ giao dịch");
-        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
-            throw new IllegalAccessException("Không thể huỷ giao dịch");
-        if(transaction.getTransactionDetails() != null) {
-            for(TransactionDetail detail : transaction.getTransactionDetails()) {
-                int newQuantity = detail.getQuantity() + detail.getProduct().getQuantity();
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status)) {
+            for (TransactionDetail detail : transaction.getTransactionDetails()) {
+                int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();
                 detail.getProduct().setQuantity(newQuantity);
+                if(newQuantity >= 10)
+                    detail.getProduct().setStatus(ProductStatusEnum.IN_STOCK.status);
+                else {
+                    detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
+                }
                 productRepository.save(detail.getProduct());
             }
         }
 
         transaction.setStatus(TransactionStatusEnum.CANCEL.status);
 
-        return transactionRepository.save(transaction).getStatus() == 0;
+        return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.CANCEL.status);
     }
 
     @Override
@@ -197,10 +200,23 @@ public class TransactionServiceImpl implements TransactionService {
 
         assert transaction != null;
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
-            throw new IllegalAccessException("Không thể hoàn thành giao dịch");
+            throw new IllegalAccessException("Không thể xác  giao dịch");
 
-        transaction.setStatus(TransactionStatusEnum.SUCCESS.status);
+        for (TransactionDetail detail : transaction.getTransactionDetails()) {
+            int newQuantity = detail.getProduct().getQuantity() - detail.getQuantity();
 
-        return transactionRepository.save(transaction).getStatus() == 2;
+            if (newQuantity < 0)
+                throw new IllegalAccessException("Tồn kho không đủ");
+            if(newQuantity < 10)
+                detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
+            if(newQuantity == 0)
+                detail.getProduct().setStatus(ProductStatusEnum.OUT_OF_STOCK.status);
+            detail.getProduct().setQuantity(newQuantity);
+            productRepository.save(detail.getProduct());
+        }
+
+        transaction.setStatus(TransactionStatusEnum.CONFIRMED.status);
+
+        return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.CONFIRMED.status);
     }
 }

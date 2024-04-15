@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.service.impl;
 
+import com.keysoft.ecommerce.constant.ProductStatusEnum;
 import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.dto.ProductImageDTO;
 import com.keysoft.ecommerce.model.Category;
@@ -79,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
         } else {
             productDTO.setEnable(true);
             productDTO.setQuantity(0);
+            productDTO.setStatus(ProductStatusEnum.OUT_OF_STOCK.status);
             product = modelMapper.map(productDTO, Product.class);
             product.setCode(CodeHelper.spawnCodeFromName(productDTO.getName()));
         }
