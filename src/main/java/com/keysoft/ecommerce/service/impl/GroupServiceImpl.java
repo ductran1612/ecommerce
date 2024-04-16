@@ -44,7 +44,6 @@ public class GroupServiceImpl implements GroupService {
             throw  new IllegalStateException("Nhóm người dùng đã tồn tại");
         }
 
-        Set<RoleDTO> roles;
         Group group;
 
         if(groupDTO.getId() != null){

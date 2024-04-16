@@ -24,7 +24,7 @@ public class StockIn {
     private BigDecimal billInvoice;
 
     @OneToMany(mappedBy = "stockIn", cascade = CascadeType.ALL)
-    private Set<StockInDetail> stockInDetail;
+    private Set<StockInDetail> stockInDetails;
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;

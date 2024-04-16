@@ -57,6 +57,6 @@ public class GroupController {
         if(isSaved){
             return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lư");
+        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 }

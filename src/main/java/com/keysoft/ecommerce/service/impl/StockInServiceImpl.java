@@ -3,6 +3,7 @@ package com.keysoft.ecommerce.service.impl;
 import com.keysoft.ecommerce.constant.ProductStatusEnum;
 import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.dto.StockInDTO;
+import com.keysoft.ecommerce.dto.StockInDetailDTO;
 import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.StockIn;
 import com.keysoft.ecommerce.model.StockInDetail;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +64,7 @@ public class StockInServiceImpl implements StockInService {
         if(stockInDTO.getId() != null)
             throw new IllegalStateException("Thông tin phiếu không phù hợp");
         StockIn savedStockIn = modelMapper.map(stockInDTO, StockIn.class);
-        Set<StockInDetail> details = savedStockIn.getStockInDetail();
+        Set<StockInDetail> details = savedStockIn.getStockInDetails();
 
         for(StockInDetail detail : details) {
             Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
@@ -81,7 +83,7 @@ public class StockInServiceImpl implements StockInService {
 
         savedStockIn.setCreatedDate(LocalDateTime.now());
         savedStockIn.setCode(CodeHelper.spawnCode("import", LocalDateTime.now()));
-        savedStockIn.setStockInDetail(details);
+        savedStockIn.setStockInDetails(details);
         return stockInRepository.save(savedStockIn).getId()!= null;
     }
 }

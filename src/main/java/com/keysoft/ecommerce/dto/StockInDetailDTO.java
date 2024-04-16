@@ -11,7 +11,7 @@ public class StockInDetailDTO {
     private Long id;
     private BigDecimal importPrice;
     private BigDecimal total;
-    private ProductDTO productDTO;
+    private ProductDTO product;
     private Integer quantity;
 
 }

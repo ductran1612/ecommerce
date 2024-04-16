@@ -19,7 +19,7 @@ public class CustomerSpecification {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("enable"), true));
 
-            predicates.add(cb.like(cb.upper(root.get("full_name")), "%" + keyword.toUpperCase() + "%"));
+            predicates.add(cb.like(cb.upper(root.get("fullName")), "%" + keyword.toUpperCase() + "%"));
 
             return cb.and(predicates.toArray(Predicate[]::new));
         };
