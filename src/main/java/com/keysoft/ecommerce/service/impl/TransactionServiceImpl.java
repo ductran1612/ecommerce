@@ -144,13 +144,13 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             transaction = transactionRepository.findById(Long.valueOf(id)).orElse(null);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Id không hợp lệ: " + id);
+            throw new IllegalStateException("Id không hợp lệ: " + id);
         }
         if (transaction == null) {
             return false;
         }
         if(transaction.getStatus() == 1) {
-            throw new IllegalArgumentException("Không thể xoá đơn hàng đang xử lý");
+            throw new IllegalStateException("Không thể xoá đơn hàng đang xử lý");
         }
         transaction.setEnable(false);
         transactionRepository.save(transaction);
@@ -159,16 +159,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public boolean cancel(String id) throws IllegalAccessException {
+    public boolean cancel(String id) {
         long idL;
         try {
             idL = Long.parseLong(id);
         } catch (NumberFormatException exception) {
-            throw new IllegalAccessException("Thông tin giao dịch không phù hợp");
+            throw new IllegalStateException("Thông tin giao dịch không phù hợp");
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
         if(transaction == null)
-            throw new IllegalAccessException("Không thể huỷ giao dịch");
+            throw new IllegalStateException("Không thể huỷ giao dịch");
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status)) {
             for (TransactionDetail detail : transaction.getTransactionDetails()) {
                 int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();
@@ -189,24 +189,23 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public boolean confirm(String id) throws IllegalAccessException {
+    public boolean confirm(String id) {
         long idL;
         try {
             idL = Long.parseLong(id);
         } catch (NumberFormatException exception) {
-            throw new IllegalAccessException("Thông tin giao dịch không phù hợp");
+            throw new IllegalStateException("Thông tin giao dịch không phù hợp");
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
 
-        assert transaction != null;
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status))
-            throw new IllegalAccessException("Không thể xác  giao dịch");
+            throw new IllegalStateException("Không thể xác nhận giao dịch");
 
         for (TransactionDetail detail : transaction.getTransactionDetails()) {
             int newQuantity = detail.getProduct().getQuantity() - detail.getQuantity();
 
             if (newQuantity < 0)
-                throw new IllegalAccessException("Tồn kho không đủ");
+                throw new IllegalStateException("Tồn kho không đủ");
             if(newQuantity < 10)
                 detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
             if(newQuantity == 0)
@@ -218,5 +217,24 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatusEnum.CONFIRMED.status);
 
         return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.CONFIRMED.status);
+    }
+
+    @Override
+    @Transactional
+    public boolean received(String id) {
+        long idL;
+        try {
+            idL = Long.parseLong(id);
+        } catch (NumberFormatException exception) {
+            throw new IllegalStateException("Thông tin giao dịch không phù hợp");
+        }
+        Transaction transaction = transactionRepository.findById(idL).orElse(null);
+
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status))
+            throw new IllegalStateException("Đơn hàng chưa được xác nhận");
+
+        transaction.setStatus(TransactionStatusEnum.SUCCESS.status);
+
+        return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.SUCCESS.status);
     }
 }

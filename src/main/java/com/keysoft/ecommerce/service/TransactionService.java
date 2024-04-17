@@ -8,7 +8,8 @@ public interface TransactionService {
     boolean save(TransactionDTO transactionDTO) throws IllegalAccessException;
     TransactionDTO get(String id);
     boolean delete(String id);
-    boolean cancel(String id) throws IllegalAccessException;
-    boolean confirm(String id) throws IllegalAccessException;
+    boolean cancel(String id) ;
+    boolean confirm(String id) ;
+    boolean received(String id);
 
 }

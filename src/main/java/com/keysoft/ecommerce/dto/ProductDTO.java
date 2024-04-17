@@ -20,6 +20,7 @@ public class ProductDTO extends BaseDTO{
     private List<ProductImageDTO> images;
     private Set<CategoryDTO> categories;
     private List<Long> productCategories;
+
     private Boolean enable;
     private Integer status;
 }

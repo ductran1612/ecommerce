@@ -48,7 +48,7 @@ public class SecurityConfig {
 //                                .requestMatchers("/admin/category/**", "/admin/customer/**").hasRole("MANAGER")
 //                                .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
 //                                .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
-//                                .requestMatchers("/shop/**", "/customer/**").hasRole("CUSTOMER")
+//                                .requestMatchers("/shop/**", "/customer/**", "/admin/product/list").hasRole("CUSTOMER")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
