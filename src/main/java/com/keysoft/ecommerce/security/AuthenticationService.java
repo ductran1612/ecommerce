@@ -3,8 +3,10 @@ package com.keysoft.ecommerce.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.jwt.JwtService;
+import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.model.User;
+import com.keysoft.ecommerce.repository.CustomerRepository;
 import com.keysoft.ecommerce.repository.GroupRepository;
 import com.keysoft.ecommerce.repository.UserRepository;
 import com.keysoft.ecommerce.token.Token;
@@ -12,6 +14,7 @@ import com.keysoft.ecommerce.token.TokenRepository;
 import com.keysoft.ecommerce.token.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +34,8 @@ public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private TokenRepository tokenRepository;
     @Autowired
     private GroupRepository groupRepository;
@@ -38,6 +43,9 @@ public class AuthenticationService {
     private JwtService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private ModelMapper modelMapper;
+
     public AuthenticationResponse register(UserDTO userDTO) {
         User user = User.builder()
                 .fullName(userDTO.getFullName())
@@ -45,6 +53,9 @@ public class AuthenticationService {
                 .password(BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt(10)))
                 .build();
         user.setGroup(groupRepository.findByCode("client").orElse(null));
+        user.setEnable(true);
+        Customer customer = modelMapper.map(user, Customer.class);
+        customerRepository.save(customer);
         User savedUser = userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
