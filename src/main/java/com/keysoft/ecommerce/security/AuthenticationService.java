@@ -5,6 +5,7 @@ import com.keysoft.ecommerce.dto.UserDTO;
 import com.keysoft.ecommerce.jwt.JwtService;
 import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.model.User;
+import com.keysoft.ecommerce.repository.GroupRepository;
 import com.keysoft.ecommerce.repository.UserRepository;
 import com.keysoft.ecommerce.token.Token;
 import com.keysoft.ecommerce.token.TokenRepository;
@@ -32,6 +33,8 @@ public class AuthenticationService {
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
     private JwtService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -41,6 +44,7 @@ public class AuthenticationService {
                 .username(userDTO.getUsername())
                 .password(BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt(10)))
                 .build();
+        user.setGroup(groupRepository.findByCode("client").orElse(null));
         User savedUser = userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
