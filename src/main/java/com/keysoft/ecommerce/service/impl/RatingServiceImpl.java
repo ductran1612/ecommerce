@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class RatingServiceImpl implements RatingService {
             throw new IllegalStateException("Thông tin sản phẩm trong phản hồi không hợp lệ");
         if(rating.getCustomer().getUsername() == null)
             throw new IllegalStateException("Thông tin khách hàng không hợp lệ");
-
+        rating.setCreatedDate(LocalDateTime.now());
         rating.setProduct(productRepository.findById(rating.getProduct().getId()).orElse(null));
         rating.setCustomer(customerRepository.findByUsername(rating.getCustomer().getUsername()).orElse(null));
         return ratingRepository.save(rating).getId() != null;

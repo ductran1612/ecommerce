@@ -9,10 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Builder
@@ -63,7 +60,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        for(Role role : roles) {
+        Set<Role> roleSet = new HashSet<>();
+
+        roleSet.addAll(roles);
+        roleSet.addAll(group.getRoles());
+        for(Role role:roleSet) {
             authorities.add(new SimpleGrantedAuthority(role.getCode()));
         }
         return authorities;
