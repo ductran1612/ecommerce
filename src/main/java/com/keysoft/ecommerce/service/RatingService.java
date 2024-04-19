@@ -8,4 +8,5 @@ import java.util.List;
 public interface RatingService {
     boolean createRating(RatingDTO ratingDTO);
     List<RatingDTO> getRatingByProduct(String productId);
+    Double getAverageRatingByProduct(String productId);
 }

@@ -1,7 +1,6 @@
 package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.dto.CustomerDTO;
-import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.dto.RatingDTO;
 import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.Rating;
@@ -12,10 +11,7 @@ import com.keysoft.ecommerce.service.RatingService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,5 +57,18 @@ public class RatingServiceImpl implements RatingService {
         }catch (NumberFormatException e) {
             throw  new IllegalStateException("Thông tin sản phẩm không hợp lệ");
         }
+    }
+
+    @Override
+    public Double getAverageRatingByProduct(String productId) {
+        List<RatingDTO> ratingDTOS = getRatingByProduct(productId);
+        if(ratingDTOS.isEmpty())
+            return 0.0;
+        int sum = 0;
+        for(RatingDTO ratingDTO : ratingDTOS) {
+            sum += ratingDTO.getRating();
+        }
+
+        return (double) sum / ratingDTOS.size();
     }
 }
