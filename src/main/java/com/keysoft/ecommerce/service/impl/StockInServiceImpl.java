@@ -52,7 +52,7 @@ public class StockInServiceImpl implements StockInService {
         try {
             stockInDTO = modelMapper.map(stockInRepository.findById(Long.valueOf(id)).orElse(null), StockInDTO.class);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException();
+            throw new NumberFormatException("id không hợp lệ");
         }
         return stockInDTO;
     }

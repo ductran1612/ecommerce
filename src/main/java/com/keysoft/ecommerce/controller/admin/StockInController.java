@@ -39,4 +39,14 @@ public class StockInController {
         return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> getDetail(@PathVariable("id") String id) {
+        log.info("controller: get detail stock in");
+        try {
+            return ResponseEntity.ok(stockInService.get(id));
+        }catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
