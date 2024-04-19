@@ -14,7 +14,6 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer score;
     private String comment;
     private LocalDateTime createdDate;
     @ManyToOne

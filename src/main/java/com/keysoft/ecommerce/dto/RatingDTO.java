@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Setter
 public class RatingDTO extends BaseDTO{
     private Long id;
-    private Integer score;
     private String comment;
     private ProductDTO product;
     private CustomerDTO customer;
