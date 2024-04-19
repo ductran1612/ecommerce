@@ -34,12 +34,11 @@ public class RatingServiceImpl implements RatingService {
         Rating rating = modelMapper.map(ratingDTO, Rating.class);
         if(rating.getProduct().getId() == null)
             throw new IllegalStateException("Thông tin sản phẩm trong phản hồi không hợp lệ");
-        CustomerDTO customerDTO = (CustomerDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(customerDTO == null)
+        if(rating.getCustomer().getUsername() == null)
             throw new IllegalStateException("Thông tin khách hàng không hợp lệ");
 
         rating.setProduct(productRepository.findById(rating.getProduct().getId()).orElse(null));
-        rating.setCustomer(customerRepository.findById(customerDTO.getId()).orElse(null));
+        rating.setCustomer(customerRepository.findByUsername(rating.getCustomer().getUsername()).orElse(null));
         return ratingRepository.save(rating).getId() != null;
     }
 
