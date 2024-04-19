@@ -6,6 +6,6 @@ import com.keysoft.ecommerce.dto.RatingDTO;
 import java.util.List;
 
 public interface RatingService {
-    boolean crateRating(RatingDTO ratingDTO);
-    List<RatingDTO> getRatingByProduct(ProductDTO productDTO);
+    boolean createRating(RatingDTO ratingDTO);
+    List<RatingDTO> getRatingByProduct(String productId);
 }

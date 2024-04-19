@@ -1,14 +1,24 @@
 package com.keysoft.ecommerce.service.impl;
 
+import com.keysoft.ecommerce.dto.CustomerDTO;
 import com.keysoft.ecommerce.dto.ProductDTO;
 import com.keysoft.ecommerce.dto.RatingDTO;
+import com.keysoft.ecommerce.model.Product;
+import com.keysoft.ecommerce.model.Rating;
+import com.keysoft.ecommerce.repository.CustomerRepository;
+import com.keysoft.ecommerce.repository.ProductRepository;
 import com.keysoft.ecommerce.repository.RatingRepository;
 import com.keysoft.ecommerce.service.RatingService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,14 +27,39 @@ public class RatingServiceImpl implements RatingService {
     @Autowired
     private RatingRepository ratingRepository;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
     private ModelMapper modelMapper;
     @Override
-    public boolean crateRating(RatingDTO ratingDTO) {
-        return false;
+    public boolean createRating(RatingDTO ratingDTO) {
+        log.info("service: create rating");
+        Rating rating = modelMapper.map(ratingDTO, Rating.class);
+        if(rating.getProduct().getId() == null)
+            throw new IllegalStateException("Thông tin sản phẩm trong phản hồi không hợp lệ");
+        CustomerDTO customerDTO = (CustomerDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(customerDTO == null)
+            throw new IllegalStateException("Thông tin khách hàng không hợp lệ");
+
+        rating.setProduct(productRepository.findById(rating.getProduct().getId()).orElse(null));
+        rating.setCustomer(customerRepository.findById(customerDTO.getId()).orElse(null));
+        return ratingRepository.save(rating).getId() != null;
     }
 
     @Override
-    public List<RatingDTO> getRatingByProduct(ProductDTO productDTO) {
-        return null;
+    public List<RatingDTO> getRatingByProduct(String productId) {
+        log.info("service: find by product");
+        try {
+            Product product = productRepository.findById(Long.valueOf(productId)).orElse(null);
+            List<Rating> ratingList = ratingRepository.findByProduct(product);
+            List<RatingDTO> results = new ArrayList<>();
+            for(Rating rating : ratingList) {
+                results.add(modelMapper.map(rating, RatingDTO.class));
+            }
+            return results;
+        }catch (NumberFormatException e) {
+            throw  new IllegalStateException("Thông tin sản phẩm không hợp lệ");
+        }
     }
 }

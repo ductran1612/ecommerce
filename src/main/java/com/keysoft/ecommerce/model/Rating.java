@@ -15,7 +15,7 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String comment;
-    private String reply;
+    private Integer rating;
     private LocalDateTime createdDate;
     @ManyToOne
     @JoinColumn(name = "product_id")

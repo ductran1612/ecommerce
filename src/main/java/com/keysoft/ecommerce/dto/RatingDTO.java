@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class RatingDTO extends BaseDTO{
     private Long id;
     private String comment;
-    private String reply;
+    private Integer rating;
     private ProductDTO product;
     private CustomerDTO customer;
     private LocalDateTime createdDate;
