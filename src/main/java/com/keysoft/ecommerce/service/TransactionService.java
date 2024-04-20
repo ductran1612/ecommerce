@@ -3,6 +3,8 @@ package com.keysoft.ecommerce.service;
 import com.keysoft.ecommerce.dto.TransactionDTO;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface TransactionService {
     Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO);
     boolean save(TransactionDTO transactionDTO) throws IllegalAccessException;
@@ -12,4 +14,5 @@ public interface TransactionService {
     boolean confirm(String id) ;
     boolean received(String id);
 
+    List<TransactionDTO> getTransactionByCustomer(String username);
 }

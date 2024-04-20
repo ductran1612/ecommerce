@@ -3,6 +3,7 @@ package com.keysoft.ecommerce.service.impl;
 import com.keysoft.ecommerce.constant.ProductStatusEnum;
 import com.keysoft.ecommerce.constant.TransactionStatusEnum;
 import com.keysoft.ecommerce.dto.TransactionDTO;
+import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.Transaction;
 import com.keysoft.ecommerce.model.TransactionDetail;
@@ -236,5 +237,18 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatusEnum.SUCCESS.status);
 
         return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.SUCCESS.status);
+    }
+
+    @Override
+    public List<TransactionDTO> getTransactionByCustomer(String username) {
+        Customer customer = customerRepository.findByUsername(username).orElse(null);
+        if(customer == null)
+            throw new IllegalStateException("Khách hàng không hợp lệ");
+        List<Transaction> transactionList = transactionRepository.findAllByCustomer(customer);
+        List<TransactionDTO> results = new ArrayList<>();
+        for(Transaction transaction : transactionList) {
+            results.add(modelMapper.map(transaction, TransactionDTO.class));
+        }
+        return results;
     }
 }

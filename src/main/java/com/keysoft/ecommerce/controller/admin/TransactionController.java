@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/transaction")
 @Slf4j
@@ -93,6 +95,15 @@ public class TransactionController {
             return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
         }catch (Exception e) {
             return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
+        }
+    }
+
+    @GetMapping("/order")
+    public ResponseEntity<?> getOrderHistory(@RequestParam("username") String username) {
+        try{
+            return ResponseEntity.ok(transactionService.getTransactionByCustomer(username));
+        }catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
