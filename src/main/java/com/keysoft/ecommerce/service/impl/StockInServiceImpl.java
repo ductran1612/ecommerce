@@ -68,7 +68,7 @@ public class StockInServiceImpl implements StockInService {
 
         for(StockInDetail detail : details) {
             Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
-            if (product.getId() == null)
+            if (product == null)
                 throw new IllegalAccessException("Không tìm thấy thông tin sản phẩm");
 
             product.setQuantity(product.getQuantity() + detail.getQuantity());

@@ -58,18 +58,22 @@ public class ProductController {
             responseData.put("product", productService.get(id));
             responseData.put("rootCategories", categoryService.getRootCategories());
             return ResponseEntity.ok(responseData);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody ProductDTO product) {
-        boolean isSaved = productService.save(product);
-        if(isSaved){
-            return ResponseEntity.ok("Lưu thành công");
+        try{
+            boolean isSaved = productService.save(product);
+            if (isSaved) {
+                return ResponseEntity.ok("Lưu thành công");
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+        }catch (IllegalStateException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @PostMapping("/delete/{id}")

@@ -55,7 +55,7 @@ public class RatingServiceImpl implements RatingService {
             }
             return results;
         }catch (NumberFormatException e) {
-            throw  new IllegalStateException("Thông tin sản phẩm không hợp lệ");
+            throw new IllegalStateException("Thông tin sản phẩm không hợp lệ");
         }
     }
 

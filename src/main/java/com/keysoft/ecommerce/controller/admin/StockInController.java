@@ -33,10 +33,14 @@ public class StockInController {
     @PostMapping("save")
     public ResponseEntity<?> save(@RequestBody StockInDTO stockInDTO) throws IllegalAccessException {
         log.info("controller: save stock in");
-        if(stockInService.save(stockInDTO)) {
-            return ResponseEntity.ok("Lưu thành công");
+        try{
+            if(stockInService.save(stockInDTO)) {
+                return ResponseEntity.ok("Lưu thành công");
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @GetMapping("/detail/{id}")
@@ -44,7 +48,7 @@ public class StockInController {
         log.info("controller: get detail stock in");
         try {
             return ResponseEntity.ok(stockInService.get(id));
-        }catch (NumberFormatException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

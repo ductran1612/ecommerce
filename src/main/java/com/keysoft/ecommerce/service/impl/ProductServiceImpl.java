@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -47,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductDTO> getAllProducts(ProductDTO productDTO) {
         log.info("service: get all products");
-        Page<Product> page = productRepository.findAll(productSpecification.filter(productDTO), PageRequest.of(productDTO.getPage(), productDTO.getSize()));
+        Page<Product> page = productRepository.findAll(productSpecification.filter(), PageRequest.of(productDTO.getPage(), productDTO.getSize()));
         List<ProductDTO> results = new ArrayList<>();
 
         for(Product item : page.getContent()){
@@ -149,8 +148,10 @@ public class ProductServiceImpl implements ProductService {
         try{
             productDTO = modelMapper.map(productRepository.findById(Long.valueOf(id)).orElse(null), ProductDTO.class);
         }catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Id không hợp lệ: " + id);
+            throw new NumberFormatException("Id không hợp lệ: " + id);
         }
+        if(productDTO == null || !productDTO.getEnable())
+            throw new IllegalStateException("Không tìm thấy sản phẩm");
         return productDTO;
     }
 
@@ -165,7 +166,7 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Id không hợp lệ: " + id);
         }
 
-        if(product == null){
+        if(product == null || !product.getEnable()){
             return false;
         }
         product.setEnable(false);
@@ -187,7 +188,6 @@ public class ProductServiceImpl implements ProductService {
 
             return resultsDTO;
         }
-
         return Collections.emptyList();
     }
 

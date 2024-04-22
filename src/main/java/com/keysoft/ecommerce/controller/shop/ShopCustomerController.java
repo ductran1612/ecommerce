@@ -15,7 +15,7 @@ public class ShopCustomerController {
     public ResponseEntity<?> getTransaction(@PathVariable("id") String id){
         try {
             return ResponseEntity.ok(transactionService.get(id));
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -26,7 +26,7 @@ public class ShopCustomerController {
             if(transactionService.received(id))
                 return ResponseEntity.ok("Xác nhận thành công");
             return ResponseEntity.badRequest().body("Xác nhận không thành công");
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

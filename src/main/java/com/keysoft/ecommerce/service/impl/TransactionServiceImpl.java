@@ -12,6 +12,7 @@ import com.keysoft.ecommerce.repository.ProductRepository;
 import com.keysoft.ecommerce.repository.TransactionDetailRepository;
 import com.keysoft.ecommerce.repository.TransactionRepository;
 import com.keysoft.ecommerce.service.TransactionService;
+import com.keysoft.ecommerce.specification.TransactionSpecification;
 import com.keysoft.ecommerce.util.CodeHelper;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +41,14 @@ public class TransactionServiceImpl implements TransactionService {
     private CustomerRepository customerRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private TransactionSpecification transactionSpecification;
 
     @Override
     public Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO) {
         log.info("service: get all transactions");
-        Page<Transaction> page = transactionRepository.findAll(PageRequest.of(transactionDTO.getPage(), transactionDTO.getSize()));
+        Page<Transaction> page = transactionRepository.findAll(transactionSpecification.filter(),
+                PageRequest.of(transactionDTO.getPage(), transactionDTO.getSize()));
         List<TransactionDTO> results = new ArrayList<>();
         for (Transaction transaction : page.getContent()) {
             TransactionDTO dto = modelMapper.map(transaction, TransactionDTO.class);
@@ -67,9 +71,9 @@ public class TransactionServiceImpl implements TransactionService {
 
 
         if (transactionDTO.getId() != null) {
-            Transaction oldTransaction = transactionRepository.findById(transactionDTO.getId()).orElse(new Transaction());
+            Transaction oldTransaction = transactionRepository.findById(transactionDTO.getId()).orElse(null );
 
-            if (oldTransaction.getId() == null) {
+            if (oldTransaction == null) {
                 throw new IllegalAccessException("Thông tin giao dịch không tồn tại");
             } else {
                 if (transactionDTO.getDeletedDetails() != null && !transactionDTO.getDeletedDetails().isEmpty()) {
@@ -150,7 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction == null) {
             return false;
         }
-        if(transaction.getStatus() == 1) {
+        if(!Objects.equals(transaction.getStatus(), TransactionStatusEnum.SUCCESS.status)) {
             throw new IllegalStateException("Không thể xoá đơn hàng đang xử lý");
         }
         transaction.setEnable(false);
@@ -169,7 +173,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
         if(transaction == null)
-            throw new IllegalStateException("Không thể huỷ giao dịch");
+            throw new IllegalStateException("Không tồn tại giao dịch");
         if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status)) {
             for (TransactionDetail detail : transaction.getTransactionDetails()) {
                 int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();

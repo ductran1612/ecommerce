@@ -45,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<CustomerDTO> getAllCustomers(CustomerDTO criteria) {
         log.info("service: get all customers");
-        Page<Customer> page = customerRepository.findAllByEnableTrue(PageRequest.of(criteria.getPage(), criteria.getSize()));
+        Page<Customer> page = customerRepository.findAll(customerSpecification.filter(), PageRequest.of(criteria.getPage(), criteria.getSize()));
         List<CustomerDTO> result = new ArrayList<>();
 
         for(Customer item : page.getContent()) {
@@ -93,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         if(customerDTO.getId() == null) {
             if(checkExistUsername(customerDTO)) {
-                return false;
+                throw new IllegalStateException("Username đã tồn tại");
             }
         }
         customer = modelMapper.map(customerDTO, Customer.class);

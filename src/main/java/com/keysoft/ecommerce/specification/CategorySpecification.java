@@ -1,5 +1,6 @@
 package com.keysoft.ecommerce.specification;
 
+import com.keysoft.ecommerce.dto.CategoryDTO;
 import com.keysoft.ecommerce.model.Category;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,7 +12,17 @@ import java.util.List;
 
 @Component
 public class CategorySpecification {
-    public Specification<Category> search(final String keyword, final Boolean isMain) {
+    public Specification<Category> filter() {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.equal(root.get("enable"), true));
+
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
+
+    public Specification<Category> search(final Boolean isMain) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -20,10 +31,6 @@ public class CategorySpecification {
             if (isMain != null) {
                 Predicate mainCategoriesCheck = isMain ? cb.isNull(root.get("parentsId")) : cb.isNotNull(root.get("parentsId"));
                 predicates.add(mainCategoriesCheck);
-            }
-
-            if (StringUtils.hasLength(keyword)) {
-                predicates.add(cb.or(cb.like(cb.upper(root.get("name")), "%" + keyword.trim().toUpperCase() + "%")));
             }
 
             return cb.and(predicates.toArray(Predicate[]::new));

@@ -51,7 +51,7 @@ public class TransactionController {
             if(isSaved)
                 return ResponseEntity.ok().build();
             return ResponseEntity.badRequest().body("Lỗi khi lưu");
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Lỗi khi lưu");
         }
     }
@@ -66,7 +66,7 @@ public class TransactionController {
             }
             return ResponseEntity.badRequest().body("Lỗi khi xoá");
         }catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi khi xoá");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ public class TransactionController {
             }
             return ResponseEntity.badRequest().body("Lỗi không thể hoàn thành đơn hàng");
         }catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi không thể hoàn thành đơn hàng");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -102,7 +102,7 @@ public class TransactionController {
     public ResponseEntity<?> getOrderHistory(@RequestParam("username") String username) {
         try{
             return ResponseEntity.ok(transactionService.getTransactionByCustomer(username));
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

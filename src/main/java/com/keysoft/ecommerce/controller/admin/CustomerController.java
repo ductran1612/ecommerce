@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/customer")
@@ -28,7 +26,7 @@ public class CustomerController {
         customerDTO.setSize(size);
         Page<CustomerDTO> result = customerService.getAllCustomers(customerDTO);
         if (result.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm nào!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy khách hàng nào!");
         } else {
             return ResponseEntity.ok(result);
         }
@@ -39,18 +37,22 @@ public class CustomerController {
         log.info("controller: update customer form, id = {}", id);
         try {
             return ResponseEntity.ok(customerService.get(id));
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CustomerDTO customer) {
-        boolean isSaved = customerService.save(customer);
-        if(isSaved){
-            return ResponseEntity.ok("Lưu thành công");
+        try{
+            boolean isSaved = customerService.save(customer);
+            if(isSaved){
+                return ResponseEntity.ok("Lưu thành công");
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @PostMapping("/delete/{id}")
@@ -60,8 +62,8 @@ public class CustomerController {
             if(customerService.delete(id))
                 return ResponseEntity.ok("Xoá thành công");
             return ResponseEntity.badRequest().body("Xoá không thành công!");
-        }catch (NumberFormatException e){
-            return ResponseEntity.badRequest().body("Xoá không thành công!");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

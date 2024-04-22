@@ -29,7 +29,7 @@ public class CategoryController {
         categoryDTO.setSize(size);
         Page<CategoryDTO> result = categoryService.getAllCategories(categoryDTO);
         if(result.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh quyền nào!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục sản phẩm nào!");
         } else {
             return ResponseEntity.ok(result);
         }
@@ -80,13 +80,13 @@ public class CategoryController {
         if(isSaved){
             return ResponseEntity.ok("Lưu thành công");
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lư");
+        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @GetMapping("/listParents")
     public ResponseEntity<List<CategoryDTO>> getParentsCategories () {
         log.info("controller: get parents categories");
-        List<CategoryDTO> results = categoryService.getParentsCategories();
+        List<CategoryDTO> results = categoryService.getRootCategories();
         return ResponseEntity.ok(results.isEmpty() ? null : results);
     }
 

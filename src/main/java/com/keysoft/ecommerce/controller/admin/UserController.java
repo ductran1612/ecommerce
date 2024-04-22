@@ -34,7 +34,7 @@ public class UserController {
         log.info("controller: form update user");
         try{
             return ResponseEntity.ok(userService.get(id));
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -47,7 +47,7 @@ public class UserController {
             if(userService.save(userDTO))
                 return ResponseEntity.ok("Lưu người dùng thành công");
             return ResponseEntity.badRequest().body("Lưu người dùng thất bại");
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -57,7 +57,7 @@ public class UserController {
         log.info("controller: form assign role");
         try{
             return ResponseEntity.ok(userService.get(id));
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -68,7 +68,7 @@ public class UserController {
             if(userService.assignRole(userDTO))
                 return ResponseEntity.ok("Thành công");
             return ResponseEntity.badRequest().body("Thất bại");
-        }catch (IllegalStateException e) {
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

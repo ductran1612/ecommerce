@@ -2,6 +2,7 @@ package com.keysoft.ecommerce.service.impl;
 
 import com.keysoft.ecommerce.dto.RoleDTO;
 import com.keysoft.ecommerce.dto.UserDTO;
+import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Group;
 import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.model.User;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDTO> getAllUsers(UserDTO userDTO) {
         log.info("service: get all users");
-        Page<User> page = userRepository.findAll(userSpecification.filter(userDTO), PageRequest.of(userDTO.getPage(), userDTO.getSize()));
+        Page<User> page = userRepository.findAll(userSpecification.filter(), PageRequest.of(userDTO.getPage(), userDTO.getSize()));
         List<UserDTO> results = new ArrayList<>();
         for (User user : page.getContent()) {
             results.add(modelMapper.map(user, UserDTO.class));
@@ -63,8 +64,8 @@ public class UserServiceImpl implements UserService {
             userEntity = modelMapper.map(userDTO, User.class);
             userEntity.setEnable(true);
         } else {
-            userEntity = userRepository.findById(userDTO.getId()).orElse(new User());
-            if (userEntity.getId() == null) {
+            userEntity = userRepository.findById(userDTO.getId()).orElse(null);
+            if (userEntity == null) {
                 throw new IllegalStateException("Thông tin người dùng không tồn tại");
             }
         }
@@ -82,7 +83,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean delete(String id) {
-        return false;
+        User user = userRepository.findById(Long.valueOf(id)).orElse(null);
+        if (user == null) {
+            return false;
+        }
+        user.setEnable(false);
+        userRepository.save(user);
+        return !userRepository.findById(Long.valueOf(id)).orElse(null).getEnable();
     }
 
     @Override
@@ -102,8 +109,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean assignRole(UserDTO userDTO) {
-        User userEntity = userRepository.findById(userDTO.getId()).orElse(new User());
-        if (userEntity.getId() == null) {
+        User userEntity = userRepository.findById(userDTO.getId()).orElse(null);
+        if (userEntity == null) {
             throw new IllegalStateException("Thông tin người dùng không tồn tại");
         }
         if(userDTO.getRoles().isEmpty())

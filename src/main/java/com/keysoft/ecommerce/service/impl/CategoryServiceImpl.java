@@ -31,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDTO> getRootCategories() {
         log.info("service: get root category");
-        List<Category> rootCategories = categoryRepository.findByParentsIdIsNull();
+        List<Category> rootCategories = categoryRepository.findAll(categorySpecification.search(true));
         List<CategoryDTO> results = new ArrayList<>();
 
         for(Category item : rootCategories) {
@@ -45,7 +45,8 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDTO> getSubCategories(Long id) {
         List<CategoryDTO> subDTO = new ArrayList<>();
         for (Category category : categoryRepository.findAllByParentsId(id)) {
-            subDTO.add(modelMapper.map(category, CategoryDTO.class));
+            if(category.getEnable())
+                subDTO.add(modelMapper.map(category, CategoryDTO.class));
         }
         return subDTO;
     }
@@ -53,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Page<CategoryDTO> getAllCategories(CategoryDTO categoryDTO) {
         log.info("service: get all categories");
-        Page<Category> page = categoryRepository.findAll(PageRequest.of(categoryDTO.getPage(), categoryDTO.getSize()));
+        Page<Category> page = categoryRepository.findAll(categorySpecification.filter(), PageRequest.of(categoryDTO.getPage(), categoryDTO.getSize()));
         List<CategoryDTO> results = new ArrayList<>();
 
         for(Category item : page.getContent()) {
@@ -90,20 +91,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO get(Long id) {
         CategoryDTO dto = modelMapper.map(categoryRepository.findById(id).orElse(null), CategoryDTO.class);
         if (dto == null)
-            throw new IllegalArgumentException("Không tìm thấy danh mục sản phẩm");
+            throw new IllegalStateException("Không tìm thấy danh mục sản phẩm");
 
         return dto;
-    }
-
-    @Override
-    public List<CategoryDTO> getParentsCategories() {
-        log.info("service: get parents categories");
-        List<Category> list = categoryRepository.findByParentsIdIsNull();
-        List<CategoryDTO> results = new ArrayList<>();
-        for (Category item : list) {
-            results.add(modelMapper.map(item, CategoryDTO.class));
-        }
-        return results;
     }
 
     @Override

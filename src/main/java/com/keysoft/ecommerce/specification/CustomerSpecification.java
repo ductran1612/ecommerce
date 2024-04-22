@@ -26,7 +26,7 @@ public class CustomerSpecification {
 
     }
 
-    public Specification<Customer> filter(CustomerDTO customerDTO) {
+    public Specification<Customer> filter() {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("enable"), true));
