@@ -9,4 +9,5 @@ public class ProductImageDTO {
     private Long id;
     private String name;
     private ProductDTO productDTO;
+    private Boolean enable;
 }
