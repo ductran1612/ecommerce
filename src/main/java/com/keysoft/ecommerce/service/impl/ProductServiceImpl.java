@@ -106,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
                     ProductImage image = new ProductImage();
                     image.setName(fileName);
                     image.setProduct(product);
+                    image.setEnable(true);
                     productImages.add(image);
                     FileOutputStream fos;
                     try {
@@ -126,7 +127,8 @@ public class ProductServiceImpl implements ProductService {
             if(product.getImages() != null){
                 for(ProductImage img : product.getImages()){
                     if(!imageIds.contains(img.getId())){
-                        productImageRepository.deleteById(img.getId());
+                        img.setEnable(false);
+                        productImageRepository.save(img);
                         Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
                         try {
                             Files.deleteIfExists(imagePathToDelete);

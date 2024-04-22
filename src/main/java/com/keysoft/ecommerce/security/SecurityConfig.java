@@ -27,8 +27,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
-    private CustomSuccessHandler customSuccessHandler;
-    @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
     @Autowired
     private UserRepository userRepository;
@@ -43,31 +41,17 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/resources/assets/**").permitAll()
-//                                .requestMatchers("/admin/home").hasAnyRole("CASHIER", "WAREHOUSE")
-//                                .requestMatchers("/admin/group/**", "/admin/user/**", "/admin/customer/**").hasRole("ADMIN")
-//                                .requestMatchers("/admin/category/**", "/admin/customer/**").hasRole("MANAGER")
-//                                .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
-//                                .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
-//                                .requestMatchers("/admin/rating/create", "/customer/**", "/admin/product/list").hasRole("CUSTOMER")
+                                .requestMatchers("/admin/home").hasAnyRole("CASHIER", "WAREHOUSE")
+                                .requestMatchers("/admin/group/**", "/admin/user/**", "/admin/customer/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/category/**", "/admin/customer/**").hasRole("MANAGER")
+                                .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
+                                .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
+                                .requestMatchers("/admin/rating/create", "/customer/**", "/admin/product/list").hasRole("CUSTOMER")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//                .formLogin(formLogin ->
-//                        formLogin
-//                                .loginPage("/login").permitAll()
-//                                .successHandler(customSuccessHandler)
-//                                .failureUrl("/login?error=true")
-//                )
-//                .logout(logout ->
-//                        logout
-//                                .logoutUrl("/logout")
-//                                .logoutSuccessUrl("/home")
-//                )
-//                .exceptionHandling(exceptionHandling ->
-//                        exceptionHandling.accessDeniedPage("/login?accessDenied")
-//                );
         return http.build();
     }
 
