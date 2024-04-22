@@ -85,7 +85,7 @@ public class ProductController {
                 return ResponseEntity.ok("Xoá thành công");
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }catch (NumberFormatException e){
-            return ResponseEntity.badRequest().body("Xoá không thành công!");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
