@@ -67,14 +67,17 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(UserDTO userDTO) {
+        User user = userRepository.findByUsername(userDTO.getUsername())
+                .orElseThrow();
+        if(!user.getEnable())
+            throw new IllegalStateException("That bai");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userDTO.getUsername(),
                         userDTO.getPassword()
                 )
         );
-        User user = userRepository.findByUsername(userDTO.getUsername())
-                .orElseThrow();
+
         Map<String, Object> claims = new HashMap<>();
         Set<String> resultsRole = new HashSet<>();
         for(Role role : user.getGroup().getRoles()) {

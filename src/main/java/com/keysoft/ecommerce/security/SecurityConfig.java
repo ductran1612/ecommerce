@@ -29,8 +29,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private AuthenticationProvider authenticationProvider;
 
     @Bean
@@ -54,7 +52,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
 }

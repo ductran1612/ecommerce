@@ -31,10 +31,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody UserDTO user
     ) {
-        return ResponseEntity.ok(service.authenticate(user));
+        try {
+            return ResponseEntity.ok(service.authenticate(user));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/refresh-token")
