@@ -50,6 +50,8 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTO> results = new ArrayList<>();
 
         for(Product item : page.getContent()){
+            List<ProductImage> images = productImageRepository.findAllByProductAndEnable(item, true);
+            item.setImages(images);
             ProductDTO dto = modelMapper.map(item, ProductDTO.class);
             results.add(dto);
         }
@@ -148,7 +150,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO get(String id) {
         ProductDTO productDTO;
         try{
-            productDTO = modelMapper.map(productRepository.findById(Long.valueOf(id)).orElse(null), ProductDTO.class);
+            Product product = productRepository.findById(Long.valueOf(id)).orElse(null);
+            product.setImages(productImageRepository.findAllByProductAndEnable(product, true));
+            productDTO = modelMapper.map(product, ProductDTO.class);
         }catch (NumberFormatException e) {
             throw new NumberFormatException("Id không hợp lệ: " + id);
         }
