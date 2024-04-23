@@ -71,13 +71,13 @@ public class AuthenticationService {
                 .orElseThrow();
         if(!user.getEnable())
             throw new IllegalStateException("That bai");
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userDTO.getUsername(),
                         userDTO.getPassword()
                 )
         );
-
         Map<String, Object> claims = new HashMap<>();
         Set<String> resultsRole = new HashSet<>();
         for(Role role : user.getGroup().getRoles()) {
@@ -129,7 +129,7 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         username = jwtService.extractUsername(refreshToken);
         if (username != null) {
-            User user = this.userRepository.findByUsername(username)
+            User user = userRepository.findByUsername(username)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 String accessToken = jwtService.generateToken(user);

@@ -28,8 +28,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,13 +40,13 @@ public class SecurityConfig {
                                 .requestMatchers("/admin/home").hasAnyRole("CASHIER", "WAREHOUSE")
                                 .requestMatchers("/admin/group/**", "/admin/user/**", "/admin/customer/**").hasRole("ADMIN")
                                 .requestMatchers("/admin/category/**", "/admin/customer/**").hasRole("MANAGER")
+                                .requestMatchers("/admin/rating/create", "/customer/**", "/admin/product/list").hasRole("CUSTOMER")
                                 .requestMatchers("/admin/transaction/**", "/admin/product/**").hasRole("CASHIER")
                                 .requestMatchers("/admin/stock/**").hasRole("WAREHOUSE")
-                                .requestMatchers("/admin/rating/create", "/customer/**", "/admin/product/list").hasRole("CUSTOMER")
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

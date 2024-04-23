@@ -154,8 +154,9 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction == null) {
             return false;
         }
-        if(!Objects.equals(transaction.getStatus(), TransactionStatusEnum.SUCCESS.status)) {
-            throw new IllegalStateException("Không thể xoá đơn hàng đang xử lý");
+        if(!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CANCEL.status)
+        || !Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status)) {
+            throw new IllegalStateException("Không thể xoá đơn hàng trong trạng thái này");
         }
         transaction.setEnable(false);
         transactionRepository.save(transaction);
@@ -174,7 +175,7 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
         if(transaction == null)
             throw new IllegalStateException("Không tồn tại giao dịch");
-        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status)) {
+        if (Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status)) {
             for (TransactionDetail detail : transaction.getTransactionDetails()) {
                 int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();
                 detail.getProduct().setQuantity(newQuantity);
