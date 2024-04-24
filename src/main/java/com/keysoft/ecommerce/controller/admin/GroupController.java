@@ -24,7 +24,7 @@ public class GroupController {
         log.info("controller: get all groups");
         List<GroupDTO> result = groupService.getAllGroups();
         if(result.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy  nào!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy nhóm người dùng nào!");
         } else {
             return ResponseEntity.ok(result);
         }

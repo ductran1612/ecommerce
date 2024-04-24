@@ -44,9 +44,9 @@ public class ProductServiceImpl implements ProductService {
     private ModelMapper modelMapper;
 
     @Override
-    public Page<ProductDTO> getAllProducts(ProductDTO productDTO) {
+    public Page<ProductDTO> search(ProductDTO productDTO, String keyword) {
         log.info("service: get all products");
-        Page<Product> page = productRepository.findAll(productSpecification.filter(), PageRequest.of(productDTO.getPage(), productDTO.getSize()));
+        Page<Product> page = productRepository.findAll(productSpecification.filter(keyword), PageRequest.of(productDTO.getPage(), productDTO.getSize()));
         List<ProductDTO> results = new ArrayList<>();
 
         for(Product item : page.getContent()){
@@ -131,12 +131,12 @@ public class ProductServiceImpl implements ProductService {
                     if(!imageIds.contains(img.getId())){
                         img.setEnable(false);
                         productImageRepository.save(img);
-                        Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
-                        try {
-                            Files.deleteIfExists(imagePathToDelete);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+//                        Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
+//                        try {
+//                            Files.deleteIfExists(imagePathToDelete);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> searchByKeyword(String keyword) {
         if (StringUtils.hasText(keyword)) {
-            List<Product> results = productRepository.findAll(productSpecification.filterByName(keyword));
+            List<Product> results = productRepository.findAll(productSpecification.filter(keyword));
 
             List<ProductDTO> resultsDTO = new ArrayList<>();
 

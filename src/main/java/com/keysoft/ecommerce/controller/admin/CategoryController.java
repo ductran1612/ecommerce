@@ -45,17 +45,14 @@ public class CategoryController {
     @GetMapping("/update/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable("id") String id) {
         log.info("controller: update category form, id = {}", id);
-        Map<String, Object> responseData = new HashMap<>();
         try {
             CategoryDTO categoryDTO = categoryService.get(Long.valueOf(id));
             CategoryDTO parents = null;
             if(categoryDTO.getParentsId() != null) {
                 parents = categoryService.get(categoryDTO.getParentsId());
             }
-
             categoryDTO.setParentsCategory(parents);
-            responseData.put("category", categoryService.get(Long.valueOf(id)));
-            return ResponseEntity.ok(responseData);
+            return ResponseEntity.ok(categoryDTO);
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -69,18 +66,22 @@ public class CategoryController {
                 return ResponseEntity.ok("Xoá thành công");
             return ResponseEntity.badRequest().body("Xoá không thành công!");
         }catch (NumberFormatException e){
-            return ResponseEntity.badRequest().body("Xoá không thành công!");
+            return ResponseEntity.badRequest().body("Id không hợp lệ");
         }
     }
 
     @PostMapping(value = "/save")
     public ResponseEntity<?> save(@RequestBody CategoryDTO categoryDTO) {
         log.info("controller: save category");
-        boolean isSaved = categoryService.save(categoryDTO);
-        if(isSaved){
-            return ResponseEntity.ok("Lưu thành công");
+        try{
+            boolean isSaved = categoryService.save(categoryDTO);
+            if(isSaved){
+                return ResponseEntity.ok("Lưu thành công");
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+        }catch(Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.badRequest().body("Lỗi khi lưu");
     }
 
     @GetMapping("/listParents")

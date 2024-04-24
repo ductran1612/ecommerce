@@ -11,23 +11,12 @@ import java.util.List;
 
 @Component
 public class ProductSpecification {
-    public Specification<Product> filterByName(final String keyword) {
 
+    public Specification<Product> filter(String keyword) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("enable"), true));
-
             predicates.add(cb.like(cb.upper(root.get("name")), "%" + keyword.toUpperCase() + "%"));
-
-            return cb.and(predicates.toArray(Predicate[]::new));
-        };
-
-    }
-
-    public Specification<Product> filter() {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("enable"), true));
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }

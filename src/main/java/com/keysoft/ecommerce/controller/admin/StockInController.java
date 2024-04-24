@@ -16,12 +16,16 @@ public class StockInController {
     @Autowired
     private StockInService stockInService;
     @PostMapping("/list")
-    public ResponseEntity<?> getAllStockIns(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllStockIns(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "")String keyword
+            ) {
         log.info("controller: get all stock in");
         StockInDTO stockInDTO = new StockInDTO();
         stockInDTO.setPage(page);
         stockInDTO.setSize(size);
-        Page<StockInDTO> results = stockInService.getAllStockIns(stockInDTO);
+        Page<StockInDTO> results = stockInService.getAllStockIns(stockInDTO, keyword);
         if(results.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy phiếu nhập kho nào!");
         }else {

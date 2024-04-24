@@ -16,11 +16,11 @@ import java.util.List;
 
 @Component
 public class TransactionSpecification {
-    public Specification<Transaction> filter() {
+    public Specification<Transaction> filter(String keyword) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("enable"), true));
-
+            predicates.add(cb.like(cb.upper(root.get("code")), "%" + keyword.toUpperCase() + "%"));
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }

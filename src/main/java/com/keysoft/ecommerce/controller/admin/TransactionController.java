@@ -19,13 +19,16 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping("/list")
-    public ResponseEntity<?> getAllTransactions(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String keyword) {
         log.info("controller: get all transactions");
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setPage(page);
         transactionDTO.setSize(size);
 
-        Page<TransactionDTO> result = transactionService.getAllTransactions(transactionDTO);
+        Page<TransactionDTO> result = transactionService.getAllTransactions(transactionDTO, keyword);
         if (result.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy giao dịch nào!");
         } else {

@@ -10,6 +10,7 @@ import com.keysoft.ecommerce.model.StockInDetail;
 import com.keysoft.ecommerce.repository.ProductRepository;
 import com.keysoft.ecommerce.repository.StockInRepository;
 import com.keysoft.ecommerce.service.StockInService;
+import com.keysoft.ecommerce.specification.StockInSpecification;
 import com.keysoft.ecommerce.util.CodeHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -34,11 +35,14 @@ public class StockInServiceImpl implements StockInService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
+    private StockInSpecification stockInSpecification;
+    @Autowired
     private ModelMapper modelMapper;
     @Override
-    public Page<StockInDTO> getAllStockIns(StockInDTO stockInDTO) {
+    public Page<StockInDTO> getAllStockIns(StockInDTO stockInDTO, String keyword) {
         log.info("service: get all stock in");
-        Page<StockIn> page = stockInRepository.findAll(PageRequest.of(stockInDTO.getPage(), stockInDTO.getSize()));
+        Page<StockIn> page = stockInRepository.findAll(stockInSpecification.filter(keyword),
+                PageRequest.of(stockInDTO.getPage(), stockInDTO.getSize()));
         List<StockInDTO> results = new ArrayList<>();
         for (StockIn item : page.getContent()) {
             results.add(modelMapper.map(item, StockInDTO.class));

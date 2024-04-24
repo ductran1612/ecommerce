@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -71,6 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
     public boolean save(CategoryDTO categoryDTO) {
         log.info("service: save category");
         Category category;
+        if(checkNameUsed(categoryDTO))
+            throw new IllegalStateException("Danh mục này đã tồn tại");
         if (categoryDTO.getId() != null) {
             category = categoryRepository.findById(categoryDTO.getId()).orElse(null);
             if (category == null) {
@@ -107,5 +110,18 @@ public class CategoryServiceImpl implements CategoryService {
         category.setEnable(false);
         categoryRepository.save(category);
         return !categoryRepository.findById(id).orElse(new Category()).getEnable();
+    }
+
+    public boolean checkNameUsed(CategoryDTO criteria) {
+        Category category = categoryRepository.findByName(criteria.getName()).orElse(null);
+
+        if (category == null)
+            return false;
+
+        if (criteria.getId() == null) {
+            return true;
+        }
+
+        return (!Objects.equals(category.getId(), criteria.getId()));
     }
 }

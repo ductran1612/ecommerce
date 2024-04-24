@@ -15,4 +15,5 @@ public class StockInDTO extends BaseDTO{
     private BigDecimal billInvoice;
     private Set<StockInDetailDTO> stockInDetails;
     private LocalDateTime createdDate;
+    private Boolean enable;
 }

@@ -27,13 +27,17 @@ public class ProductController {
     private CategoryService categoryService;
 
     @PostMapping("/list")
-    public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String keyword
+    ) {
         log.info("controller: get all products");
         ProductDTO productDTO = new ProductDTO();
         productDTO.setPage(page);
         productDTO.setSize(size);
 
-        Page<ProductDTO> result = productService.getAllProducts(productDTO);
+        Page<ProductDTO> result = productService.search(productDTO, keyword);
         if (result.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm nào!");
         } else {
@@ -95,5 +99,4 @@ public class ProductController {
         List<ProductDTO> results = productService.searchByKeyword(keyword);
         return ResponseEntity.ok(results.isEmpty() ? null : results);
     }
-
 }

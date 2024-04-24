@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface TransactionService {
-    Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO);
+    Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO, String keyword);
     boolean save(TransactionDTO transactionDTO) throws IllegalAccessException;
     TransactionDTO get(String id);
     boolean delete(String id);

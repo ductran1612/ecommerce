@@ -46,9 +46,11 @@ public class RoleController {
     public ResponseEntity<?> deleteRole(@PathVariable(value = "id") String id) {
         log.info("controller: delete role, id = {}", id);
         try{
-            return ResponseEntity.ok(roleService.delete(Long.valueOf(id)));
-        }catch (NumberFormatException e){
+            if(roleService.delete(Long.valueOf(id)))
+                return ResponseEntity.ok("Xoá thành công");
             return ResponseEntity.badRequest().body("Xoá không thành công!");
+        }catch (NumberFormatException e){
+            return ResponseEntity.badRequest().body("Id không hợp lệ");
         }
     }
 

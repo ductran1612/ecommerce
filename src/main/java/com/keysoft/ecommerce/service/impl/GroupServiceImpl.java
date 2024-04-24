@@ -22,14 +22,14 @@ import java.util.*;
 @Slf4j
 public class GroupServiceImpl implements GroupService {
     @Autowired
-    private GroupRepository GroupRepository;
+    private GroupRepository groupRepository;
     @Autowired
     private ModelMapper modelMapper;
 
     @Override
     public List<GroupDTO> getAllGroups() {
         List<GroupDTO> results = new ArrayList<>();
-        for(Group Group : GroupRepository.findAll()) {
+        for(Group Group : groupRepository.findAll()) {
             results.add(modelMapper.map(Group, GroupDTO.class));
         }
         return results;
@@ -45,20 +45,19 @@ public class GroupServiceImpl implements GroupService {
         }
 
         Group group;
-
         if(groupDTO.getId() != null){
-            group = GroupRepository.findById(groupDTO.getId()).orElse(null);
+            group = groupRepository.findById(groupDTO.getId()).orElse(null);
             if(group != null)
                 group.getRoles().removeAll(group.getRoles());
         }
 
         groupDTO.setCode(CodeHelper.spawnCodeFromName(groupDTO.getName()));
         group = modelMapper.map(groupDTO, Group.class);
-        return GroupRepository.save(group).getId()!=null;
+        return groupRepository.save(group).getId()!=null;
     }
 
     public Boolean checkGroupExist(GroupDTO criteria) {
-        Group group = GroupRepository.findByName(criteria.getName()).orElse(null);
+        Group group = groupRepository.findByName(criteria.getName()).orElse(null);
 
         if (group == null)
             return false;
@@ -72,7 +71,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO get(Long id) {
-        GroupDTO groupDTO = modelMapper.map(GroupRepository.findById(id).orElse(new Group()), GroupDTO.class);
+        GroupDTO groupDTO = modelMapper.map(groupRepository.findById(id).orElse(new Group()), GroupDTO.class);
 
         List<RoleDTO> roles = List.copyOf(groupDTO.getRoles());
         List<Long> roleIds = new ArrayList<>();
@@ -87,7 +86,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public boolean delete(Long id) {
 
-        Group selected = GroupRepository.findById(id).orElse(new Group());
+        Group selected = groupRepository.findById(id).orElse(new Group());
 
         if (selected.getId() == null) {
             throw new IllegalStateException("Không tìm được nhóm người dùng");
@@ -96,11 +95,10 @@ public class GroupServiceImpl implements GroupService {
         Hibernate.initialize(selected.getUsers());
 
         if (selected.getUsers().isEmpty()) {
-            GroupRepository.deleteById(id);
+            groupRepository.deleteById(id);
+            return true;
         } else {
             return false;
         }
-
-        return true;
     }
 }

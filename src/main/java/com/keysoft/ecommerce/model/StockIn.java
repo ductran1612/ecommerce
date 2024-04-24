@@ -28,4 +28,7 @@ public class StockIn {
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
+
+    @Column(name = "enable")
+    private Boolean enable;
 }

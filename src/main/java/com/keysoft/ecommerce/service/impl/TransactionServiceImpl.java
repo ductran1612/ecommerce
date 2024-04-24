@@ -45,9 +45,9 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionSpecification transactionSpecification;
 
     @Override
-    public Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO) {
+    public Page<TransactionDTO> getAllTransactions(TransactionDTO transactionDTO, String keyword) {
         log.info("service: get all transactions");
-        Page<Transaction> page = transactionRepository.findAll(transactionSpecification.filter(),
+        Page<Transaction> page = transactionRepository.findAll(transactionSpecification.filter(keyword),
                 PageRequest.of(transactionDTO.getPage(), transactionDTO.getSize()));
         List<TransactionDTO> results = new ArrayList<>();
         for (Transaction transaction : page.getContent()) {

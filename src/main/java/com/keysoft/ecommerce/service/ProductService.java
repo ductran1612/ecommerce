@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ProductService {
-    Page<ProductDTO> getAllProducts(ProductDTO productDTO);
+    Page<ProductDTO> search(ProductDTO productDTO, String keyword);
     boolean save(ProductDTO productDTO);
 
     ProductDTO get(String id);
