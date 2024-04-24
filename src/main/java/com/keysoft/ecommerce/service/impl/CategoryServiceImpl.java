@@ -104,9 +104,12 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("service: delete category id: {}", id);
 
         Category category = categoryRepository.findById(id).orElse(null);
+
         if(category == null){
             return false;
         }
+        if(!category.getProducts().isEmpty())
+            throw new IllegalStateException("Không thể xoá do danh mục đang chứa sản phẩm");
         category.setEnable(false);
         categoryRepository.save(category);
         return !categoryRepository.findById(id).orElse(new Category()).getEnable();

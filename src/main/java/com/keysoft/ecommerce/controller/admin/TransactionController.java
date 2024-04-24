@@ -79,9 +79,9 @@ public class TransactionController {
         try{
             boolean isConfirmed = transactionService.confirm(id);
             if (isConfirmed) {
-                return ResponseEntity.ok("Đã hoàn thành đơn hàng");
+                return ResponseEntity.ok("Đã xác nhận đơn hàng");
             }
-            return ResponseEntity.badRequest().body("Lỗi không thể hoàn thành đơn hàng");
+            return ResponseEntity.badRequest().body("Lỗi không thể xác nhận đơn hàng");
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -97,7 +97,7 @@ public class TransactionController {
             }
             return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
         }catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi không thể huỷ đơn hàng");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

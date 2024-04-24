@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,7 +37,6 @@ public class ProductController {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setPage(page);
         productDTO.setSize(size);
-
         Page<ProductDTO> result = productService.search(productDTO, keyword);
         if (result.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm nào!");

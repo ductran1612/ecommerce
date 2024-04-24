@@ -71,7 +71,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
         if (transactionDTO.getId() != null) {
-            Transaction oldTransaction = transactionRepository.findById(transactionDTO.getId()).orElse(null );
+            Transaction oldTransaction = transactionRepository.findById(transactionDTO.getId()).orElse(null);
 
             if (oldTransaction == null) {
                 throw new IllegalAccessException("Thông tin giao dịch không tồn tại");
@@ -102,8 +102,7 @@ public class TransactionServiceImpl implements TransactionService {
             savedTransaction.setEnable(true);
         }
 
-        if (savedTransaction.getBillInvoice() == null)
-            savedTransaction.setBillInvoice(BigDecimal.valueOf(0));
+        savedTransaction.setBillInvoice(BigDecimal.valueOf(0));
 
         for (TransactionDetail detail : details) {
             if (detail.getProduct().getId() == null) {
@@ -112,11 +111,11 @@ public class TransactionServiceImpl implements TransactionService {
             } else {
                 Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
                 detail.setProduct(product);
-                if(detail.getQuantity() < 0)
+                if (detail.getQuantity() < 0)
                     throw new IllegalAccessException("Số lượng nhập vào không chính xác");
                 int newQuantity = detail.getProduct().getQuantity() - detail.getQuantity();
                 if (newQuantity < 0)
-                    throw new IllegalAccessException("Số lương tồn kho của sản phẩm: " +detail.getProduct().getName() + " không đủ");
+                    throw new IllegalAccessException("Số lương tồn kho của sản phẩm: " + detail.getProduct().getName() + " không đủ");
                 detail.setSellPrice(detail.getProduct().getPrice());
                 detail.setTotal(detail.getSellPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
 
@@ -154,8 +153,8 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction == null) {
             return false;
         }
-        if(!Objects.equals(transaction.getStatus(), TransactionStatusEnum.CANCEL.status)
-        || !Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status)) {
+        if (Objects.equals(transaction.getStatus(), TransactionStatusEnum.CONFIRMED.status)
+                || Objects.equals(transaction.getStatus(), TransactionStatusEnum.SUCCESS.status)) {
             throw new IllegalStateException("Không thể xoá đơn hàng trong trạng thái này");
         }
         transaction.setEnable(false);
@@ -173,21 +172,21 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalStateException("Thông tin giao dịch không phù hợp");
         }
         Transaction transaction = transactionRepository.findById(idL).orElse(null);
-        if(transaction == null)
+        if (transaction == null)
             throw new IllegalStateException("Không tồn tại giao dịch");
-        if (Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status)) {
-            for (TransactionDetail detail : transaction.getTransactionDetails()) {
-                int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();
-                detail.getProduct().setQuantity(newQuantity);
-                if(newQuantity >= 10)
-                    detail.getProduct().setStatus(ProductStatusEnum.IN_STOCK.status);
-                else {
-                    detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
-                }
-                productRepository.save(detail.getProduct());
-            }
+        if (!Objects.equals(transaction.getStatus(), TransactionStatusEnum.PROGRESS.status)) {
+            throw new IllegalStateException("Không thể huỷ khi đơn hàng không ở trạng thái chờ xác nhận");
         }
-
+        for (TransactionDetail detail : transaction.getTransactionDetails()) {
+            int newQuantity = detail.getProduct().getQuantity() + detail.getQuantity();
+            detail.getProduct().setQuantity(newQuantity);
+            if (newQuantity >= 10)
+                detail.getProduct().setStatus(ProductStatusEnum.IN_STOCK.status);
+            else {
+                detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
+            }
+            productRepository.save(detail.getProduct());
+        }
         transaction.setStatus(TransactionStatusEnum.CANCEL.status);
 
         return Objects.equals(transactionRepository.save(transaction).getStatus(), TransactionStatusEnum.CANCEL.status);
@@ -212,9 +211,9 @@ public class TransactionServiceImpl implements TransactionService {
 
             if (newQuantity < 0)
                 throw new IllegalStateException("Tồn kho không đủ");
-            if(newQuantity < 10)
+            if (newQuantity < 10)
                 detail.getProduct().setStatus(ProductStatusEnum.LOW_STOCK.status);
-            if(newQuantity == 0)
+            if (newQuantity == 0)
                 detail.getProduct().setStatus(ProductStatusEnum.OUT_OF_STOCK.status);
             detail.getProduct().setQuantity(newQuantity);
             productRepository.save(detail.getProduct());
@@ -247,11 +246,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> getTransactionByCustomer(String username) {
         Customer customer = customerRepository.findByUsername(username).orElse(null);
-        if(customer == null)
+        if (customer == null)
             throw new IllegalStateException("Khách hàng không hợp lệ");
         List<Transaction> transactionList = transactionRepository.findAllByCustomer(customer);
         List<TransactionDTO> results = new ArrayList<>();
-        for(Transaction transaction : transactionList) {
+        for (Transaction transaction : transactionList) {
             results.add(modelMapper.map(transaction, TransactionDTO.class));
         }
         return results;

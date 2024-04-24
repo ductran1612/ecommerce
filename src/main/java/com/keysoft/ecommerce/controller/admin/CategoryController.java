@@ -65,7 +65,7 @@ public class CategoryController {
             if(categoryService.delete(Long.valueOf(id)))
                 return ResponseEntity.ok("Xoá thành công");
             return ResponseEntity.badRequest().body("Xoá không thành công!");
-        }catch (NumberFormatException e){
+        }catch (Exception e){
             return ResponseEntity.badRequest().body("Id không hợp lệ");
         }
     }

@@ -36,6 +36,7 @@ public class StockInServiceImpl implements StockInService {
     private StockInSpecification stockInSpecification;
     @Autowired
     private ModelMapper modelMapper;
+
     @Override
     public Page<StockInDTO> getAllStockIns(StockInDTO stockInDTO, String keyword) {
         log.info("service: get all stock in");
@@ -61,37 +62,36 @@ public class StockInServiceImpl implements StockInService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
-    public Boolean save(StockInDTO stockInDTO){
+    public Boolean save(StockInDTO stockInDTO) {
         log.info("sevice: save stock in");
-        if(stockInDTO.getId() != null)
+        if (stockInDTO.getId() != null)
             throw new IllegalStateException("Thông tin phiếu không phù hợp");
         StockIn savedStockIn = modelMapper.map(stockInDTO, StockIn.class);
         Set<StockInDetail> details = savedStockIn.getStockInDetails();
         savedStockIn.setStockInDetails(Collections.emptySet());
 
-        if(stockInDTO.getId() != null) {
+        if (stockInDTO.getId() != null) {
             StockIn oldStock = stockInRepository.findById(stockInDTO.getId()).orElse(null);
-            if(oldStock == null)
+            if (oldStock == null)
                 throw new IllegalStateException("Phiếu nhập kho không tồn tại");
-            if(!stockInDTO.getDeletedDetails().isEmpty())
+            if (!stockInDTO.getDeletedDetails().isEmpty())
                 stockInRepository.deleteAllById(stockInDTO.getDeletedDetails());
             savedStockIn.setCreatedDate(oldStock.getCreatedDate());
-        }else{
+        } else {
             savedStockIn.setCreatedDate(LocalDateTime.now());
             savedStockIn.setCode(CodeHelper.spawnCode("import", LocalDateTime.now()));
             savedStockIn.setEnable(true);
         }
 
-        if (savedStockIn.getBillInvoice() == null)
-            savedStockIn.setBillInvoice(BigDecimal.valueOf(0));
+        savedStockIn.setBillInvoice(BigDecimal.valueOf(0));
 
-        for(StockInDetail detail : details) {
+        for (StockInDetail detail : details) {
             Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
             if (product == null)
                 throw new IllegalStateException("Không tìm thấy thông tin sản phẩm");
 
             product.setQuantity(product.getQuantity() + detail.getQuantity());
-            if(product.getQuantity() < 10)
+            if (product.getQuantity() < 10)
                 product.setStatus(ProductStatusEnum.LOW_STOCK.status);
             product.setStatus(ProductStatusEnum.IN_STOCK.status);
             productRepository.save(product);
@@ -103,19 +103,19 @@ public class StockInServiceImpl implements StockInService {
         }
 
         savedStockIn.setStockInDetails(details);
-        return stockInRepository.save(savedStockIn).getId()!= null;
+        return stockInRepository.save(savedStockIn).getId() != null;
     }
 
     @Override
     public Boolean delete(String id) {
         log.info("service: delete stock");
-        try{
+        try {
             StockIn stockIn = stockInRepository.findById(Long.valueOf(id)).orElse(null);
-            if(stockIn == null)
+            if (stockIn == null)
                 return false;
             stockIn.setEnable(false);
             stockInRepository.save(stockIn);
-        }catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new NumberFormatException("ID không hợp lệ");
         }
         return true;
