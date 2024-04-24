@@ -97,6 +97,8 @@ public class StockInServiceImpl implements StockInService {
             productRepository.save(product);
             detail.setProduct(product);
             detail.setImportPrice(product.getImportPrice());
+            detail.setTotal(detail.getImportPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+            savedStockIn.setBillInvoice(savedStockIn.getBillInvoice().add(detail.getTotal()));
             detail.setStockIn(savedStockIn);
         }
 
