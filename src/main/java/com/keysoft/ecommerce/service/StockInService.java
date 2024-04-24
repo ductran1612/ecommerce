@@ -6,5 +6,6 @@ import org.springframework.data.domain.Page;
 public interface StockInService {
     Page<StockInDTO> getAllStockIns(StockInDTO stockInDTO, String keyword);
     StockInDTO get(String id);
-    Boolean save(StockInDTO stockInDTO) throws IllegalAccessException;
+    Boolean save(StockInDTO stockInDTO);
+    Boolean delete(String id);
 }

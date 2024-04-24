@@ -57,4 +57,26 @@ public class StockInController {
         }
     }
 
+    @GetMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") String id) {
+        log.info("controller: update stock in");
+        try {
+            return ResponseEntity.ok(stockInService.get(id));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") String id) {
+        log.info("controller: delete stock in");
+        try{
+            if(stockInService.delete(id))
+                return ResponseEntity.ok("Thành công");
+            return ResponseEntity.badRequest().body("Thất bại");
+        }catch (NumberFormatException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -14,6 +15,7 @@ public class StockInDTO extends BaseDTO{
     private String code;
     private BigDecimal billInvoice;
     private Set<StockInDetailDTO> stockInDetails;
+    private List<Long> deletedDetails;
     private LocalDateTime createdDate;
     private Boolean enable;
 }
