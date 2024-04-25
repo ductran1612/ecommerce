@@ -7,10 +7,7 @@ import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.Transaction;
 import com.keysoft.ecommerce.model.TransactionDetail;
-import com.keysoft.ecommerce.repository.CustomerRepository;
-import com.keysoft.ecommerce.repository.ProductRepository;
-import com.keysoft.ecommerce.repository.TransactionDetailRepository;
-import com.keysoft.ecommerce.repository.TransactionRepository;
+import com.keysoft.ecommerce.repository.*;
 import com.keysoft.ecommerce.service.TransactionService;
 import com.keysoft.ecommerce.specification.TransactionSpecification;
 import com.keysoft.ecommerce.util.CodeHelper;
@@ -37,6 +34,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDetailRepository transactionDetailRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ProductImageRepository productImageRepository;
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
@@ -135,7 +134,11 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionDTO get(String id) {
         TransactionDTO transactionDTO;
         try {
-            transactionDTO = modelMapper.map(transactionRepository.findById(Long.valueOf(id)).orElse(null), TransactionDTO.class);
+            Transaction transaction = transactionRepository.findById(Long.valueOf(id)).orElse(null);
+            for(TransactionDetail transactionDetail : transaction.getTransactionDetails()) {
+                transactionDetail.getProduct().setImages(productImageRepository.findAllByProductAndEnable(transactionDetail.getProduct(), true));
+            }
+            transactionDTO = modelMapper.map(transaction, TransactionDTO.class);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Id không hợp lệ: " + id);
         }
