@@ -80,6 +80,7 @@ public class TransactionServiceImpl implements TransactionService {
                     transactionDetailRepository.deleteAllById(transactionDTO.getDeletedDetails());
                 }
             }
+            savedTransaction.setCode(oldTransaction.getCode());
             savedTransaction.setCreatedDate(oldTransaction.getCreatedDate());
         } else {
             savedTransaction.setStatus(TransactionStatusEnum.PROGRESS.status);
@@ -99,9 +100,8 @@ public class TransactionServiceImpl implements TransactionService {
                 savedTransaction.setCode(CodeHelper.spawnCode("T", LocalDateTime.now()));
 
             savedTransaction.setCreatedDate(modifiedDate);
-            savedTransaction.setEnable(true);
         }
-
+        savedTransaction.setEnable(true);
         savedTransaction.setBillInvoice(BigDecimal.valueOf(0));
 
         for (TransactionDetail detail : details) {
@@ -126,6 +126,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
         savedTransaction.setStatus(TransactionStatusEnum.PROGRESS.status);
         savedTransaction.setTransactionDetails(details);
+        System.out.println(savedTransaction.getTransactionDetails());
 
         return transactionRepository.save(savedTransaction).getId() != null;
     }

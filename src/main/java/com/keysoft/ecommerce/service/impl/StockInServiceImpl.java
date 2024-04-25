@@ -72,15 +72,15 @@ public class StockInServiceImpl implements StockInService {
             StockIn oldStock = stockInRepository.findById(stockInDTO.getId()).orElse(null);
             if (oldStock == null)
                 throw new IllegalStateException("Phiếu nhập kho không tồn tại");
-            if (!stockInDTO.getDeletedDetails().isEmpty())
+            if (stockInDTO.getDeletedDetails() != null && !stockInDTO.getDeletedDetails().isEmpty())
                 stockInRepository.deleteAllById(stockInDTO.getDeletedDetails());
+            savedStockIn.setCode(oldStock.getCode());
             savedStockIn.setCreatedDate(oldStock.getCreatedDate());
         } else {
             savedStockIn.setCreatedDate(LocalDateTime.now());
             savedStockIn.setCode(CodeHelper.spawnCode("import", LocalDateTime.now()));
-            savedStockIn.setEnable(true);
         }
-
+        savedStockIn.setEnable(true);
         savedStockIn.setBillInvoice(BigDecimal.valueOf(0));
 
         for (StockInDetail detail : details) {
@@ -101,6 +101,7 @@ public class StockInServiceImpl implements StockInService {
         }
 
         savedStockIn.setStockInDetails(details);
+        System.out.println(savedStockIn.getStockInDetails());
         return stockInRepository.save(savedStockIn).getId() != null;
     }
 
