@@ -8,6 +8,7 @@ import com.keysoft.ecommerce.model.Product;
 import com.keysoft.ecommerce.model.StockIn;
 import com.keysoft.ecommerce.model.StockInDetail;
 import com.keysoft.ecommerce.repository.ProductRepository;
+import com.keysoft.ecommerce.repository.StockInDetailRepository;
 import com.keysoft.ecommerce.repository.StockInRepository;
 import com.keysoft.ecommerce.service.StockInService;
 import com.keysoft.ecommerce.specification.StockInSpecification;
@@ -30,6 +31,8 @@ import java.util.*;
 public class StockInServiceImpl implements StockInService {
     @Autowired
     private StockInRepository stockInRepository;
+    @Autowired
+    private StockInDetailRepository stockInDetailRepository;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -73,7 +76,7 @@ public class StockInServiceImpl implements StockInService {
             if (oldStock == null)
                 throw new IllegalStateException("Phiếu nhập kho không tồn tại");
             if (stockInDTO.getDeletedDetails() != null && !stockInDTO.getDeletedDetails().isEmpty())
-                stockInRepository.deleteAllById(stockInDTO.getDeletedDetails());
+                stockInDetailRepository.deleteAllById(stockInDTO.getDeletedDetails());
             savedStockIn.setCode(oldStock.getCode());
             savedStockIn.setCreatedDate(oldStock.getCreatedDate());
         } else {
