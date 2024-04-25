@@ -255,6 +255,9 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactionList = transactionRepository.findAllByCustomer(customer);
         List<TransactionDTO> results = new ArrayList<>();
         for (Transaction transaction : transactionList) {
+            for(TransactionDetail transactionDetail : transaction.getTransactionDetails()) {
+                transactionDetail.getProduct().setImages(productImageRepository.findAllByProductAndEnable(transactionDetail.getProduct(), true));
+            }
             results.add(modelMapper.map(transaction, TransactionDTO.class));
         }
         return results;
