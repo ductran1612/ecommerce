@@ -80,23 +80,21 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new IllegalStateException("Không tìm thấy danh mục!");
             }
             category.setName(categoryDTO.getName());
-            category.setCode(CodeHelper.spawnCodeFromName(categoryDTO.getName()));
             category.setParentsId(categoryDTO.getParentsId());
         } else {
             category = modelMapper.map(categoryDTO, Category.class);
             category.setEnable(true);
-            category.setCode(CodeHelper.spawnCodeFromName(category.getName()));
         }
+        category.setCode(CodeHelper.spawnCodeFromName(category.getName()));
         return categoryRepository.save(category).getId() != null;
     }
 
     @Override
     public CategoryDTO get(Long id) {
-        CategoryDTO dto = modelMapper.map(categoryRepository.findById(id).orElse(null), CategoryDTO.class);
-        if (dto == null)
+        Category category = categoryRepository.findById(id).orElse(null);
+        if (category == null)
             throw new IllegalStateException("Không tìm thấy danh mục sản phẩm");
-
-        return dto;
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
