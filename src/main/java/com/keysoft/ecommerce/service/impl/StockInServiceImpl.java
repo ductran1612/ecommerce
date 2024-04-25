@@ -64,8 +64,6 @@ public class StockInServiceImpl implements StockInService {
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
     public Boolean save(StockInDTO stockInDTO) {
         log.info("sevice: save stock in");
-        if (stockInDTO.getId() != null)
-            throw new IllegalStateException("Thông tin phiếu không phù hợp");
         StockIn savedStockIn = modelMapper.map(stockInDTO, StockIn.class);
         Set<StockInDetail> details = savedStockIn.getStockInDetails();
         savedStockIn.setStockInDetails(Collections.emptySet());

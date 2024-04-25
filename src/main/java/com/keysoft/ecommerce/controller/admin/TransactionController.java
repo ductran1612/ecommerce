@@ -55,7 +55,7 @@ public class TransactionController {
                 return ResponseEntity.ok().build();
             return ResponseEntity.badRequest().body("Lỗi khi lưu");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi khi lưu");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
