@@ -93,10 +93,17 @@ public class ProductController {
         }
     }
 
+//    using select2
     @GetMapping(value = "/api/list")
-    public ResponseEntity<List<ProductDTO>> getList(@RequestParam(value = "keyword", required = false) String keyword) {
-        log.info("process=search-product-by-keyword, keyword: {}", keyword);
+    public ResponseEntity<List<ProductDTO>> getListByKeyword(@RequestParam(value = "keyword", required = false) String keyword) {
+
         List<ProductDTO> results = productService.searchByKeyword(keyword);
         return ResponseEntity.ok(results.isEmpty() ? null : results);
+    }
+
+    @GetMapping(value = "/out-of-stock")
+    public ResponseEntity<List<ProductDTO>> getListOutOfStock() {
+        log.info("controller: get out of stock list");
+        return ResponseEntity.ok(productService.getOutOfStock().isEmpty() ? null : productService.getOutOfStock());
     }
 }

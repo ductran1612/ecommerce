@@ -14,4 +14,6 @@ public interface ProductService {
     boolean delete(String id);
 
     List<ProductDTO> searchByKeyword(String keyword);
+
+    List<ProductDTO> getOutOfStock();
 }

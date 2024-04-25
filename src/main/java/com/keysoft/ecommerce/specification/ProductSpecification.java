@@ -20,4 +20,13 @@ public class ProductSpecification {
             return cb.and(predicates.toArray(Predicate[]::new));
         };
     }
+
+    public Specification<Product> filterOutOfStock() {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("enable"), true));
+            predicates.add(cb.equal(root.get("quantity"), 0));
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
 }

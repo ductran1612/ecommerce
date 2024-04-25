@@ -197,6 +197,16 @@ public class ProductServiceImpl implements ProductService {
         return Collections.emptyList();
     }
 
+    @Override
+    public List<ProductDTO> getOutOfStock() {
+        List<Product> productList = productRepository.findAll(productSpecification.filterOutOfStock());
+        List<ProductDTO> results = new ArrayList<>();
+        for(Product product : productList){
+            results.add(modelMapper.map(product, ProductDTO.class));
+        }
+        return results;
+    }
+
     public boolean checkNameUsed(ProductDTO criteria) {
         log.info("SERVICE PROCESS: CHECK PRODUCT NAME USED, CRITERIA: {}", criteria);
 
