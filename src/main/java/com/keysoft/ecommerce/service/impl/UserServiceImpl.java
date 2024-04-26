@@ -6,6 +6,7 @@ import com.keysoft.ecommerce.model.Customer;
 import com.keysoft.ecommerce.model.Group;
 import com.keysoft.ecommerce.model.Role;
 import com.keysoft.ecommerce.model.User;
+import com.keysoft.ecommerce.repository.CustomerRepository;
 import com.keysoft.ecommerce.repository.GroupRepository;
 import com.keysoft.ecommerce.repository.RoleRepository;
 import com.keysoft.ecommerce.repository.UserRepository;
@@ -33,6 +34,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private GroupRepository groupRepository;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private UserSpecification userSpecification;
@@ -59,10 +62,12 @@ public class UserServiceImpl implements UserService {
         if (isUsernameUsed(userDTO))
             throw new IllegalStateException("Username đã tồn tại");
         User userEntity;
-
+        Customer customer;
         if (userDTO.getId() == null) {
+            userDTO.setEnable(true);
             userEntity = modelMapper.map(userDTO, User.class);
-            userEntity.setEnable(true);
+            customer = modelMapper.map(userDTO, Customer.class);
+            customerRepository.save(customer);
         } else {
             userEntity = userRepository.findById(userDTO.getId()).orElse(null);
             if (userEntity == null) {
