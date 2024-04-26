@@ -97,52 +97,52 @@ public class ProductServiceImpl implements ProductService {
         product.setCategories(categories);
 
         List<ProductImage> productImages = new ArrayList<>();
-//        List<Long> imageIds = new ArrayList<>();
-//        for (ProductImageDTO imageDTO : productDTO.getImages()) {
-////            kiểm tra xem list ảnh hiện tại có chứa ảnh được gửi từ client sau khi sửa không
-//            if (imageDTO.getId() == null) {
-//                String[] parts = imageDTO.getName().split(",");
-//                if (parts.length == 2) {
-//                    byte[] imageBytes = Base64.getDecoder().decode(parts[1]);
-//                    String fileName = UUID.randomUUID().toString() + ".jpg";
-//                    ProductImage image = new ProductImage();
-//                    image.setName(fileName);
-//                    image.setProduct(product);
-//                    image.setEnable(true);
-//                    productImages.add(image);
-//                    FileOutputStream fos;
-//                    try {
-//                        Path imagePath = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", fileName);
-//                        // Tạo một FileOutputStream để ghi dữ liệu vào tệp
-//                        fos = new FileOutputStream(imagePath.toFile());
-//                        fos.write(imageBytes);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }else{
-//                imageIds.add(imageDTO.getId());
-//            }
-//        }
-//
-//        if(productDTO.getId() != null){
-//            if(product.getImages() != null){
-//                for(ProductImage img : product.getImages()){
-//                    if(!imageIds.contains(img.getId())){
-//                        img.setEnable(false);
-//                        productImageRepository.save(img);
-////                        Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
-////                        try {
-////                            Files.deleteIfExists(imagePathToDelete);
-////                        } catch (IOException e) {
-////                            e.printStackTrace();
-////                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        product.setImages(productImages);
+        List<Long> imageIds = new ArrayList<>();
+        for (ProductImageDTO imageDTO : productDTO.getImages()) {
+//            kiểm tra xem list ảnh hiện tại có chứa ảnh được gửi từ client sau khi sửa không
+            if (imageDTO.getId() == null) {
+                String[] parts = imageDTO.getName().split(",");
+                if (parts.length == 2) {
+                    byte[] imageBytes = Base64.getDecoder().decode(parts[1]);
+                    String fileName = UUID.randomUUID().toString() + ".jpg";
+                    ProductImage image = new ProductImage();
+                    image.setName(fileName);
+                    image.setProduct(product);
+                    image.setEnable(true);
+                    productImages.add(image);
+                    FileOutputStream fos;
+                    try {
+                        Path imagePath = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", fileName);
+                        // Tạo một FileOutputStream để ghi dữ liệu vào tệp
+                        fos = new FileOutputStream(imagePath.toFile());
+                        fos.write(imageBytes);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                imageIds.add(imageDTO.getId());
+            }
+        }
+
+        if(productDTO.getId() != null){
+            if(product.getImages() != null){
+                for(ProductImage img : product.getImages()){
+                    if(!imageIds.contains(img.getId())){
+                        img.setEnable(false);
+                        productImageRepository.save(img);
+//                        Path imagePathToDelete = Paths.get("E:\\Workspace\\frontend\\reactjs\\frontend_nextjs\\public", img.getName());
+//                        try {
+//                            Files.deleteIfExists(imagePathToDelete);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+                    }
+                }
+            }
+        }
+
+        product.setImages(productImages);
         return productRepository.save(product).getId() != null;
     }
 
